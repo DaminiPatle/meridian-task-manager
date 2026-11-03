@@ -16,15 +16,20 @@ The repository is a monorepo with a Node/Express/SQLite API and a React/Vite sin
 
 - **`USER_GUIDE.md`** — first-time user guide: task lifecycle, approvals, roles and a 3-minute demo script.
 - **`docs/meridian-user-guide.pdf`** — ready-to-share PDF version of the guide.
-- **`docs/user-guide.html`** — styled, printable source page for the PDF.
+- **`docs/user-guide.html`** — styled, printable source page for the guide PDF.
+- **`TECH_STACK.md`** — technical document: languages, frontend/backend stack, database connection, architecture, API, security, testing and limitations.
+- **`docs/meridian-technical-document.pdf`** — ready-to-share PDF version of the technical document.
+- **`docs/technical-document.html`** — styled, printable source page for the technical PDF.
 - **`DESIGN.md`** — product and design decisions.
 - **`DEPLOY.md`** — hosting options (Render, Railway, Vercel).
 
-Regenerate the printable guide after editing `USER_GUIDE.md`:
+Regenerate both printable documents after editing `USER_GUIDE.md` or `TECH_STACK.md`:
 
 ```bash
 npm run docs
 ```
+
+The script writes `docs/user-guide.html` and `docs/technical-document.html`; print either page from a browser to make a PDF.
 
 ## Quick start
 

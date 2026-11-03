@@ -1,18 +1,31 @@
-// Builds a styled, printable HTML version of USER_GUIDE.md.
+// Builds styled, printable HTML versions of the project documents.
 // Usage: npm run docs
 //
-// Supports the small Markdown subset used by the guide: headings, paragraphs,
-// fenced code blocks, tables, blockquotes, flat lists, rules and inline
+// Supports the small Markdown subset used by the docs: headings, paragraphs,
+// fenced code blocks, tables, blockquotes, nested lists, rules and inline
 // bold / italic / code / links.
 
 import fs from 'node:fs';
 import path from 'node:path';
 
 const root = path.resolve(import.meta.dirname, '..');
-const sourcePath = path.join(root, 'USER_GUIDE.md');
-const outputPath = path.join(root, 'docs', 'user-guide.html');
-const markdown = fs.readFileSync(sourcePath, 'utf8').replace(/\r\n/g, '\n');
-const updated = fs.statSync(sourcePath).mtime;
+
+const documents = [
+  {
+    source: 'USER_GUIDE.md',
+    output: 'docs/user-guide.html',
+    title: 'Meridian — First-Time User Guide',
+    subtitle: 'Kaam kaise aage badhta hai, kaun kya kar sakta hai, aur pehle din kya karein.',
+    footer: 'Meridian · First-Time User Guide',
+  },
+  {
+    source: 'TECH_STACK.md',
+    output: 'docs/technical-document.html',
+    title: 'Meridian — Technical Document',
+    subtitle: 'Languages, frontend/backend stack, database connection aur architecture — manager ke sawalon ke jawab.',
+    footer: 'Meridian · Technical Document',
+  },
+];
 
 function escapeHtml(value) {
   return value
@@ -62,146 +75,150 @@ function renderList(items, ordered) {
   return `<${tag}>${body}</${tag}>`;
 }
 
-const lines = markdown.split('\n');
-const out = [];
-const toc = [];
-let index = 0;
+function renderMarkdown(markdown) {
+  const lines = markdown.split('\n');
+  const out = [];
+  const toc = [];
+  let index = 0;
 
-while (index < lines.length) {
-  const line = lines[index];
+  while (index < lines.length) {
+    const line = lines[index];
 
-  if (!line.trim()) {
-    index += 1;
-    continue;
-  }
-
-  // Fenced code block
-  if (line.startsWith('```')) {
-    const language = line.slice(3).trim();
-    const body = [];
-    index += 1;
-    while (index < lines.length && !lines[index].startsWith('```')) {
-      body.push(lines[index]);
+    if (!line.trim()) {
       index += 1;
+      continue;
     }
-    index += 1;
-    out.push(
-      `<pre class="code"><code${language ? ` data-language="${escapeHtml(language)}"` : ''}>${escapeHtml(
-        body.join('\n'),
-      )}</code></pre>`,
-    );
-    continue;
-  }
 
-  // Horizontal rule
-  if (/^---+\s*$/.test(line)) {
-    out.push('<hr />');
-    index += 1;
-    continue;
-  }
-
-  // Heading
-  const heading = /^(#{1,4})\s+(.*)$/.exec(line);
-  if (heading) {
-    const level = heading[1].length;
-    const text = heading[2].trim();
-    const id = `sec-${slug(text)}`;
-    if (level === 2) toc.push({ id, text });
-    out.push(`<h${level} id="${id}">${inline(text)}</h${level}>`);
-    index += 1;
-    continue;
-  }
-
-  // Table
-  if (line.trim().startsWith('|')) {
-    const rows = [];
-    while (index < lines.length && lines[index].trim().startsWith('|')) {
-      rows.push(lines[index].trim());
+    // Fenced code block
+    if (line.startsWith('```')) {
+      const language = line.slice(3).trim();
+      const body = [];
       index += 1;
-    }
-    const cells = (row) =>
-      row
-        .replace(/^\|/, '')
-        .replace(/\|$/, '')
-        .split('|')
-        .map((cell) => cell.trim());
-    const header = cells(rows[0]);
-    const body = rows
-      .slice(1)
-      .filter((row) => !/^\|?[\s:|-]+\|?$/.test(row))
-      .map(cells);
-    const head = `<thead><tr>${header.map((cell) => `<th>${inline(cell)}</th>`).join('')}</tr></thead>`;
-    const rowsHtml = body
-      .map((row) => `<tr>${row.map((cell) => `<td>${inline(cell)}</td>`).join('')}</tr>`)
-      .join('');
-    out.push(`<table>${head}<tbody>${rowsHtml}</tbody></table>`);
-    continue;
-  }
-
-  // Blockquote
-  if (line.startsWith('>')) {
-    const body = [];
-    while (index < lines.length && lines[index].startsWith('>')) {
-      body.push(lines[index].replace(/^>\s?/, ''));
-      index += 1;
-    }
-    out.push(`<blockquote>${inline(body.join(' '))}</blockquote>`);
-    continue;
-  }
-
-  // Lists (supports one nesting level for sub-bullets under a numbered step)
-  const listMatch = /^(\s*)([-*]|\d+\.)\s+(.*)$/.exec(line);
-  if (listMatch) {
-    const items = [];
-    let listType = null;
-    while (index < lines.length) {
-      const match = /^(\s*)([-*]|\d+\.)\s+(.*)$/.exec(lines[index]);
-      if (!match) break;
-      const indent = match[1].length;
-      const ordered = /^\d/.test(match[2]);
-      const text = match[3];
-      if (indent === 0) {
-        if (listType === null) listType = ordered ? 'ol' : 'ul';
-        items.push({ text, ordered, children: [] });
-      } else if (items.length) {
-        items[items.length - 1].children.push({ text, ordered });
+      while (index < lines.length && !lines[index].startsWith('```')) {
+        body.push(lines[index]);
+        index += 1;
       }
       index += 1;
+      out.push(
+        `<pre class="code"><code${language ? ` data-language="${escapeHtml(language)}"` : ''}>${escapeHtml(
+          body.join('\n'),
+        )}</code></pre>`,
+      );
+      continue;
     }
-    out.push(renderList(items, listType === 'ol'));
-    continue;
+
+    // Horizontal rule
+    if (/^---+\s*$/.test(line)) {
+      out.push('<hr />');
+      index += 1;
+      continue;
+    }
+
+    // Heading
+    const heading = /^(#{1,4})\s+(.*)$/.exec(line);
+    if (heading) {
+      const level = heading[1].length;
+      const text = heading[2].trim();
+      const id = `sec-${slug(text)}`;
+      if (level === 2) toc.push({ id, text });
+      out.push(`<h${level} id="${id}">${inline(text)}</h${level}>`);
+      index += 1;
+      continue;
+    }
+
+    // Table
+    if (line.trim().startsWith('|')) {
+      const rows = [];
+      while (index < lines.length && lines[index].trim().startsWith('|')) {
+        rows.push(lines[index].trim());
+        index += 1;
+      }
+      const cells = (row) =>
+        row
+          .replace(/^\|/, '')
+          .replace(/\|$/, '')
+          .split('|')
+          .map((cell) => cell.trim());
+      const header = cells(rows[0]);
+      const body = rows
+        .slice(1)
+        .filter((row) => !/^\|?[\s:|-]+\|?$/.test(row))
+        .map(cells);
+      const head = `<thead><tr>${header.map((cell) => `<th>${inline(cell)}</th>`).join('')}</tr></thead>`;
+      const rowsHtml = body
+        .map((row) => `<tr>${row.map((cell) => `<td>${inline(cell)}</td>`).join('')}</tr>`)
+        .join('');
+      out.push(`<table>${head}<tbody>${rowsHtml}</tbody></table>`);
+      continue;
+    }
+
+    // Blockquote
+    if (line.startsWith('>')) {
+      const body = [];
+      while (index < lines.length && lines[index].startsWith('>')) {
+        body.push(lines[index].replace(/^>\s?/, ''));
+        index += 1;
+      }
+      out.push(`<blockquote>${inline(body.join(' '))}</blockquote>`);
+      continue;
+    }
+
+    // Lists (supports one nesting level for sub-bullets under a numbered step)
+    const listMatch = /^(\s*)([-*]|\d+\.)\s+(.*)$/.exec(line);
+    if (listMatch) {
+      const items = [];
+      let listType = null;
+      while (index < lines.length) {
+        const match = /^(\s*)([-*]|\d+\.)\s+(.*)$/.exec(lines[index]);
+        if (!match) break;
+        const indent = match[1].length;
+        const ordered = /^\d/.test(match[2]);
+        const text = match[3];
+        if (indent === 0) {
+          if (listType === null) listType = ordered ? 'ol' : 'ul';
+          items.push({ text, ordered, children: [] });
+        } else if (items.length) {
+          items[items.length - 1].children.push({ text, ordered });
+        }
+        index += 1;
+      }
+      out.push(renderList(items, listType === 'ol'));
+      continue;
+    }
+
+    // Paragraph
+    const paragraph = [];
+    while (
+      index < lines.length &&
+      lines[index].trim() &&
+      !lines[index].startsWith('#') &&
+      !lines[index].startsWith('>') &&
+      !lines[index].startsWith('```') &&
+      !lines[index].trim().startsWith('|') &&
+      !/^\s*[-*]\s+/.test(lines[index]) &&
+      !/^\s*\d+\.\s+/.test(lines[index]) &&
+      !/^---+\s*$/.test(lines[index])
+    ) {
+      paragraph.push(lines[index].trim());
+      index += 1;
+    }
+    out.push(`<p>${inline(paragraph.join(' '))}</p>`);
   }
 
-  // Paragraph
-  const paragraph = [];
-  while (
-    index < lines.length &&
-    lines[index].trim() &&
-    !lines[index].startsWith('#') &&
-    !lines[index].startsWith('>') &&
-    !lines[index].startsWith('```') &&
-    !lines[index].trim().startsWith('|') &&
-    !/^\s*[-*]\s+/.test(lines[index]) &&
-    !/^\s*\d+\.\s+/.test(lines[index]) &&
-    !/^---+\s*$/.test(lines[index])
-  ) {
-    paragraph.push(lines[index].trim());
-    index += 1;
-  }
-  out.push(`<p>${inline(paragraph.join(' '))}</p>`);
+  return { content: out.join('\n'), toc };
 }
 
-const content = out.join('\n');
-const tocHtml = toc
-  .map((entry) => `<li><a href="#${entry.id}">${inline(entry.text)}</a></li>`)
-  .join('\n');
+function renderHtml({ title, subtitle, footer, updated }, { content, toc }) {
+  const tocHtml = toc
+    .map((entry) => `<li><a href="#${entry.id}">${inline(entry.text)}</a></li>`)
+    .join('\n');
 
-const html = `<!doctype html>
+  return `<!doctype html>
 <html lang="hi">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Meridian — First-Time User Guide</title>
+<title>${escapeHtml(title)}</title>
 <style>
   :root {
     --ink: #1f2430;
@@ -459,8 +476,8 @@ const html = `<!doctype html>
     <header class="doc-head">
       <div class="mark">M</div>
       <div>
-        <h1>Meridian — First-Time User Guide</h1>
-        <p>Kaam kaise aage badhta hai, kaun kya kar sakta hai, aur pehle din kya karein.</p>
+        <h1>${escapeHtml(title)}</h1>
+        <p>${escapeHtml(subtitle)}</p>
       </div>
     </header>
 
@@ -480,14 +497,23 @@ ${content}
     </main>
 
     <footer class="doc-foot">
-      <span>Meridian · First-Time User Guide</span>
+      <span>${escapeHtml(footer)}</span>
       <span>Updated ${updated.toISOString().slice(0, 10)}</span>
     </footer>
   </div>
 </body>
 </html>
 `;
+}
 
-fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-fs.writeFileSync(outputPath, html, 'utf8');
-console.log(`Wrote ${path.relative(root, outputPath)} (${(html.length / 1024).toFixed(1)} KB)`);
+for (const document of documents) {
+  const sourcePath = path.join(root, document.source);
+  const outputPath = path.join(root, document.output);
+  const markdown = fs.readFileSync(sourcePath, 'utf8').replace(/\r\n/g, '\n');
+  const updated = fs.statSync(sourcePath).mtime;
+  const html = renderHtml({ ...document, updated }, renderMarkdown(markdown));
+
+  fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+  fs.writeFileSync(outputPath, html, 'utf8');
+  console.log(`Wrote ${path.relative(root, outputPath)} (${(html.length / 1024).toFixed(1)} KB)`);
+}

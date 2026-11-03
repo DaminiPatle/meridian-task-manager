@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Meridian — Technical Document</title>
+<style>
+  :root {
+    --ink: #1f2430;
+    --muted: #5b6475;
+    --line: #dfe4ec;
+    --soft: #f6f8fb;
+    --brand: #4f46e5;
+    --brand-soft: #eef2ff;
+    --amber-soft: #fff8e6;
+    --amber-line: #d99a00;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: #eef1f6;
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+  }
+
+  .sheet {
+    max-width: 940px;
+    margin: 32px auto;
+    padding: 56px 64px 64px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 18px 60px rgba(25, 34, 52, 0.12);
+  }
+
+  header.doc-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    padding-bottom: 22px;
+    border-bottom: 3px solid var(--brand);
+    margin-bottom: 8px;
+  }
+
+  .mark {
+    flex: 0 0 auto;
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: var(--brand);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  .doc-head h1 {
+    margin: 0;
+    font-size: 30px;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  .doc-head p {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .print-bar {
+    display: flex;
+    justify-content: flex-end;
+    margin: 18px 0 0;
+  }
+
+  .print-bar button {
+    border: 0;
+    border-radius: 8px;
+    background: var(--brand);
+    color: #fff;
+    padding: 9px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .print-bar button:hover { background: #4338ca; }
+
+  nav.toc {
+    margin: 26px 0 34px;
+    padding: 20px 24px;
+    background: var(--soft);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+  }
+
+  nav.toc h2 {
+    margin: 0 0 10px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  nav.toc ol {
+    margin: 0;
+    padding-left: 20px;
+    columns: 2;
+    column-gap: 32px;
+  }
+
+  nav.toc li {
+    margin: 4px 0;
+    font-size: 14px;
+    break-inside: avoid;
+  }
+
+  nav.toc a {
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+  }
+
+  nav.toc a:hover { border-bottom-color: var(--brand); }
+
+  main h1 { display: none; }
+
+  main h2 {
+    margin: 42px 0 14px;
+    padding-top: 26px;
+    font-size: 24px;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    border-top: 1px solid var(--line);
+  }
+
+  main h3 {
+    margin: 28px 0 10px;
+    font-size: 18px;
+    color: #2c3444;
+  }
+
+  main h4 { margin: 22px 0 8px; font-size: 16px; }
+
+  p { margin: 0 0 14px; }
+
+  a { color: var(--brand); }
+
+  strong { color: #151a24; }
+
+  code {
+    background: var(--soft);
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    padding: 1px 5px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    font-size: 0.88em;
+  }
+
+  pre.code {
+    margin: 18px 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    background: #1f2430;
+    color: #e8ecf4;
+    border-radius: 10px;
+    font-size: 13.5px;
+    line-height: 1.55;
+  }
+
+  pre.code code {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  blockquote {
+    margin: 20px 0;
+    padding: 14px 18px;
+    background: var(--amber-soft);
+    border-left: 4px solid var(--amber-line);
+    border-radius: 0 8px 8px 0;
+    color: #4a3b14;
+  }
+
+  blockquote p { margin: 0; }
+
+  table {
+    width: 100%;
+    margin: 18px 0 22px;
+    border-collapse: collapse;
+    font-size: 14.5px;
+  }
+
+  th, td {
+    padding: 9px 12px;
+    border: 1px solid var(--line);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    background: var(--soft);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  tbody tr:nth-child(even) { background: #fbfcfe; }
+
+  ul, ol { margin: 0 0 16px; padding-left: 24px; }
+
+  li { margin: 5px 0; }
+
+  hr {
+    border: 0;
+    border-top: 1px solid var(--line);
+    margin: 34px 0;
+  }
+
+  footer.doc-foot {
+    margin-top: 46px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 12.5px;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  @media (max-width: 720px) {
+    .sheet { margin: 0; border-radius: 0; padding: 28px 20px 40px; }
+    nav.toc ol { columns: 1; }
+    .doc-head h1 { font-size: 24px; }
+    th { white-space: normal; }
+  }
+
+  @media print {
+    @page { size: A4; margin: 16mm 14mm; }
+    body { background: #fff; font-size: 11pt; }
+    .sheet { margin: 0; padding: 0; box-shadow: none; border-radius: 0; max-width: none; }
+    .print-bar { display: none; }
+    nav.toc { break-after: page; }
+    main h2 { break-after: avoid; }
+    main h3 { break-after: avoid; }
+    table, tr, blockquote, pre.code { break-inside: avoid; }
+    a { color: var(--ink); text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="doc-head">
+      <div class="mark">M</div>
+      <div>
+        <h1>Meridian — Technical Document</h1>
+        <p>Languages, frontend/backend stack, database connection aur architecture — manager ke sawalon ke jawab.</p>
+      </div>
+    </header>
+
+    <div class="print-bar">
+      <button type="button" onclick="window.print()">Print / Save as PDF</button>
+    </div>
+
+    <nav class="toc">
+      <h2>Contents</h2>
+      <ol>
+<li><a href="#sec-1-ek-page-mein-poora-project">1. Ek page mein poora project</a></li>
+<li><a href="#sec-2-kaunsi-languages-use-hui-hain">2. Kaunsi languages use hui hain</a></li>
+<li><a href="#sec-3-frontend-kya-use-hua-aur-kyun">3. Frontend — kya use hua aur kyun</a></li>
+<li><a href="#sec-4-backend-kya-use-hua-aur-kyun">4. Backend — kya use hua aur kyun</a></li>
+<li><a href="#sec-5-database-sqlite-aur-connection-kaise-hota-hai">5. Database — SQLite aur connection kaise hota hai</a></li>
+<li><a href="#sec-6-architecture-request-ka-safar">6. Architecture — request ka safar</a></li>
+<li><a href="#sec-7-api-39-endpoints">7. API — 39 endpoints</a></li>
+<li><a href="#sec-8-authentication-aur-security">8. Authentication aur security</a></li>
+<li><a href="#sec-9-roles-aur-permissions">9. Roles aur permissions</a></li>
+<li><a href="#sec-10-core-workflow-technical-summary">10. Core workflow — technical summary</a></li>
+<li><a href="#sec-11-ai-integration">11. AI integration</a></li>
+<li><a href="#sec-12-reports-aur-insights">12. Reports aur insights</a></li>
+<li><a href="#sec-13-project-structure">13. Project structure</a></li>
+<li><a href="#sec-14-dependencies-sirf-12-direct-packages">14. Dependencies — sirf 12 direct packages</a></li>
+<li><a href="#sec-15-build-run-test-aur-deploy">15. Build, run, test aur deploy</a></li>
+<li><a href="#sec-16-testing-aur-quality">16. Testing aur quality</a></li>
+<li><a href="#sec-17-important-design-decisions">17. Important design decisions</a></li>
+<li><a href="#sec-18-limitations-aur-future-scope">18. Limitations aur future scope</a></li>
+<li><a href="#sec-19-manager-ke-common-sawal">19. Manager ke common sawal</a></li>
+<li><a href="#sec-20-glossary-technical-shabd-simple-mein">20. Glossary — technical shabd simple mein</a></li>
+<li><a href="#sec-21-ek-line-mein">21. Ek line mein</a></li>
+      </ol>
+    </nav>
+
+    <main>
+<h1 id="sec-meridian-technical-document">Meridian — Technical Document</h1>
+<blockquote><strong>Ye document kis ke liye hai?</strong> Manager, reviewer ya kisi bhi technical stakeholder ke liye jo poochh sakta hai: &quot;Project kaunsi language mein bana hai, frontend/backend mein kya use hua, aur database se connection kaise hota hai?&quot; Har jawab simple bhasha mein, actual code ke hisaab se diya gaya hai.</blockquote>
+<hr />
+<h2 id="sec-1-ek-page-mein-poora-project">1. Ek page mein poora project</h2>
+<table><thead><tr><th>Sawal</th><th>Jawab</th></tr></thead><tbody><tr><td>Frontend</td><td><strong>React 19 + TypeScript + Vite</strong></td></tr><tr><td>Backend</td><td><strong>Node.js 24 + Express 5</strong> (JavaScript)</td></tr><tr><td>Database</td><td><strong>SQLite</strong> — Node ka built-in <code>node:sqlite</code></td></tr><tr><td>Database connection</td><td>Koi server nahi; ek local file (<code>meridian.db</code>) directly open hoti hai</td></tr><tr><td>ORM</td><td>Nahi — <strong>raw SQL + prepared statements</strong></td></tr><tr><td>Authentication</td><td>scrypt password hashing + HMAC-SHA256 signed token</td></tr><tr><td>AI</td><td>OpenAI-compatible API (<code>gpt-4o-mini</code> default) + built-in fallback</td></tr><tr><td>Styling</td><td>Hand-written CSS (Tailwind/Bootstrap nahi)</td></tr><tr><td>Hosting</td><td>Ek Docker service jo UI + API dono serve karta hai</td></tr><tr><td>Tests</td><td>Node ka built-in test runner — <strong>12 scenarios</strong></td></tr><tr><td>Application code</td><td>Approx <strong>17,350 lines</strong>, ~53 source files</td></tr><tr><td>Database tables</td><td><strong>11 tables</strong>, 10 indexes</td></tr><tr><td>API endpoints</td><td><strong>38 routes + 1 health check = 39</strong></td></tr></tbody></table>
+<hr />
+<h2 id="sec-2-kaunsi-languages-use-hui-hain">2. Kaunsi languages use hui hain</h2>
+<table><thead><tr><th>Language</th><th>Kahan</th><th>Kaam</th><th>Approx size</th></tr></thead><tbody><tr><td><strong>JavaScript (ES Modules)</strong></td><td><code>server/src/</code></td><td>API, workflow, database queries, auth</td><td>24 files, ~4,670 lines</td></tr><tr><td><strong>JavaScript</strong></td><td><code>server/tests/</code></td><td>Automated acceptance tests</td><td>1 file, ~413 lines</td></tr><tr><td><strong>TypeScript (TSX)</strong></td><td><code>web/src/</code></td><td>React pages aur components</td><td>20 files, ~7,690 lines</td></tr><tr><td><strong>TypeScript (TS)</strong></td><td><code>web/src/lib</code>, hooks, config</td><td>API client, types, helpers</td><td>5 files, ~1,380 lines</td></tr><tr><td><strong>SQL</strong></td><td><code>server/src/</code> ke andar</td><td>Schema, indexes, queries</td><td>JavaScript strings ke roop mein</td></tr><tr><td><strong>CSS3</strong></td><td><code>web/src/styles.css</code></td><td>Poora design system</td><td>1 file, ~3,160 lines</td></tr><tr><td><strong>HTML5</strong></td><td><code>web/index.html</code></td><td>SPA ka entry page</td><td>1 file, 23 lines</td></tr><tr><td><strong>JSON</strong></td><td>package/config files</td><td>Build aur dependency config</td><td>6 files</td></tr><tr><td><strong>Markdown</strong></td><td><code>README.md</code>, <code>DESIGN.md</code>, guides</td><td>Documentation</td><td>4 files</td></tr></tbody></table>
+<blockquote><strong>Important:</strong> SQL alag <code>.sql</code> files mein nahi hai. Schema aur queries JavaScript ke andar template strings aur prepared statements ke roop mein likhi gayi hain. Isse project ko alag database client ki zaroorat nahi padti.</blockquote>
+<p><strong>Backend JavaScript hai, TypeScript nahi.</strong> Iska matlab server ke liye koi compile step nahi chahiye — <code>node server/src/index.js</code> seedha chalta hai. Input validation <strong>Zod</strong> se hoti hai, isliye galat data API tak pahunchta hi nahi.</p>
+<hr />
+<h2 id="sec-3-frontend-kya-use-hua-aur-kyun">3. Frontend — kya use hua aur kyun</h2>
+<table><thead><tr><th>Technology</th><th>Version</th><th>Kaam</th></tr></thead><tbody><tr><td><strong>React</strong></td><td>19.x</td><td>UI components</td></tr><tr><td><strong>React DOM</strong></td><td>19.x</td><td>Browser mein render karna</td></tr><tr><td><strong>React Router DOM</strong></td><td>7.x</td><td>Pages, protected routes, role-based guards</td></tr><tr><td><strong>TypeScript</strong></td><td>5.x</td><td>Type safety aur autocomplete</td></tr><tr><td><strong>Vite</strong></td><td>6.x</td><td>Dev server aur production build</td></tr><tr><td><strong>lucide-react</strong></td><td>0.468</td><td>Icons</td></tr><tr><td><strong>Hand-written CSS</strong></td><td>—</td><td>Design system, responsive layout, print styles</td></tr></tbody></table>
+<h3 id="sec-frontend-ka-structure">Frontend ka structure</h3>
+<ul><li><strong>Pages:</strong> Dashboard, Tasks, Task Detail, Action Center, Team, Reports, Meetings,</li></ul>
+<p>Meeting Detail, AI Insights, Administration, Login.</p>
+<ul><li><strong>Components:</strong> layout, dialogs, task cards, timeline, shared UI.</li><li><strong>State management:</strong> Redux nahi. React <strong>Context API</strong> (Auth + Toast) aur ek custom</li></ul>
+<p><code>useApi</code> hook — loading, error aur reload handle karta hai.</p>
+<ul><li><strong>API calls:</strong> ek central <code>lib/api.ts</code> wrapper, native <code>fetch</code> se. Har request ke</li></ul>
+<p>saath Bearer token jata hai.</p>
+<ul><li><strong>Charts:</strong> koi chart library nahi — simple CSS bars use hue hain, taaki bundle</li></ul>
+<p>halka rahe.</p>
+<ul><li><strong>Styling:</strong> Tailwind, Bootstrap ya koi UI kit nahi. Poora CSS hand-written hai.</li></ul>
+<h3 id="sec-development-vs-production">Development vs production</h3>
+<ul><li><strong>Development:</strong> Vite <code>:5173</code> par chalta hai aur <code>/api</code> requests ko Express <code>:4000</code></li></ul>
+<p>par proxy karta hai. Isse CORS ki zaroorat nahi padti.</p>
+<ul><li><strong>Production:</strong> <code>npm run build</code> se <code>web/dist</code> banta hai, jise Express hi serve karta</li></ul>
+<p>hai. UI aur API <strong>ek hi URL</strong> par chalte hain.</p>
+<ul><li><strong>Split deploy:</strong> agar UI Vercel par ho, to <code>VITE_API_URL</code> se API ka poora address</li></ul>
+<p>diya jata hai. Ye optional hai.</p>
+<hr />
+<h2 id="sec-4-backend-kya-use-hua-aur-kyun">4. Backend — kya use hua aur kyun</h2>
+<table><thead><tr><th>Technology</th><th>Version</th><th>Kaam</th></tr></thead><tbody><tr><td><strong>Node.js</strong></td><td>24.x (minimum 22.5)</td><td>Runtime</td></tr><tr><td><strong>Express</strong></td><td>5.x</td><td>HTTP server, routing, middleware</td></tr><tr><td><strong>Zod</strong></td><td>3.x</td><td>Request body validation</td></tr><tr><td><strong>cors</strong></td><td>2.x</td><td>Allowed browser origins</td></tr><tr><td><strong>node:sqlite</strong></td><td>Node built-in</td><td>Database driver</td></tr><tr><td><strong>node:crypto</strong></td><td>Node built-in</td><td>Password hashing aur token signing</td></tr></tbody></table>
+<h3 id="sec-backend-ke-main-modules">Backend ke main modules</h3>
+<table><thead><tr><th>File</th><th>Zimmedari</th></tr></thead><tbody><tr><td><code>index.js</code></td><td>Server start, database open, seed, port</td></tr><tr><td><code>app.js</code></td><td>Express app, middleware, routes mount, static UI</td></tr><tr><td><code>db.js</code></td><td>SQLite connection, schema, indexes</td></tr><tr><td><code>auth.js</code></td><td>Password hashing, token sign/verify, login rate limit</td></tr><tr><td><code>rbac.js</code></td><td>Role aur team ke hisaab se data scope</td></tr><tr><td><code>workflow.js</code></td><td>Task lifecycle, approvals, extensions, ratings, groups</td></tr><tr><td><code>reports.js</code></td><td>Assigned vs self-created reports, team metrics</td></tr><tr><td><code>ai.js</code></td><td>AI calls, heuristic fallback, workload insights</td></tr><tr><td><code>seed.js</code></td><td>Demo organisation aur demo data</td></tr><tr><td><code>repo.js</code></td><td>Common database queries</td></tr><tr><td><code>dashboard.js</code></td><td>Dashboard ka combined data</td></tr><tr><td><code>notify.js</code></td><td>In-app notifications</td></tr><tr><td><code>routes/</code></td><td>10 route files — HTTP endpoints</td></tr></tbody></table>
+<h3 id="sec-backend-design-ke-important-points">Backend design ke important points</h3>
+<ul><li><strong>Koi ORM nahi</strong> (Prisma/Sequelize nahi). Raw SQL + prepared statements.</li><li><strong>Koi compile/build step nahi</strong> backend ke liye.</li><li><strong>Synchronous database calls</strong> — <code>DatabaseSync</code> use hota hai.</li><li><strong>Transactions</strong> multi-step actions mein: <code>BEGIN IMMEDIATE</code> → changes → <code>COMMIT</code>,</li></ul>
+<p>error par <code>ROLLBACK</code>.</p>
+<ul><li><strong>Validation</strong> har route par Zod se.</li><li><strong>Error handling</strong> ek central middleware se — client ko safe message, server log mein</li></ul>
+<p>poora error.</p>
+<ul><li><strong>Permissions server par</strong> — UI ke buttons sirf presentation hain; asli decision API</li></ul>
+<p>leta hai.</p>
+<hr />
+<h2 id="sec-5-database-sqlite-aur-connection-kaise-hota-hai">5. Database — SQLite aur connection kaise hota hai</h2>
+<h3 id="sec-5-1-database-kya-hai">5.1 Database kya hai</h3>
+<table><thead><tr><th>Detail</th><th>Value</th></tr></thead><tbody><tr><td>Engine</td><td><strong>SQLite 3</strong></td></tr><tr><td>Driver</td><td>Node ka built-in <code>node:sqlite</code> (<code>DatabaseSync</code>)</td></tr><tr><td>File</td><td><code>server/data/meridian.db</code> (default)</td></tr><tr><td>Mode</td><td><strong>WAL</strong> (Write-Ahead Logging)</td></tr><tr><td>Foreign keys</td><td>ON</td></tr><tr><td>Tables</td><td><strong>11</strong></td></tr><tr><td>Indexes</td><td><strong>10</strong></td></tr><tr><td>External database server</td><td><strong>Nahi</strong></td></tr><tr><td>Native package / compile</td><td><strong>Nahi</strong></td></tr></tbody></table>
+<blockquote>SQLite ek <strong>embedded database</strong> hai. Iska matlab database server alag se nahi chalta — database ek file hai, aur application us file ko directly open karti hai. Isliye username/password, host ya port ki zaroorat nahi padti.</blockquote>
+<h3 id="sec-5-2-connection-kaise-khulta-hai-step-by-step">5.2 Connection kaise khulta hai — step by step</h3>
+<p><code>server/src/db.js</code> ka <code>openDatabase()</code> function ye kaam karta hai:</p>
+<ol><li><strong>Path tay hota hai:</strong> <code>process.env.DB_PATH</code> ya default <code>server/data/meridian.db</code>.</li><li><strong>Folder banaya jata hai:</strong> agar <code>server/data/</code> nahi hai to <code>mkdirSync</code> se ban jata</li></ol>
+<p>hai.</p>
+<ol><li><strong>File open hoti hai:</strong> <code>new DatabaseSync(dbPath)</code> — yahi &quot;connection&quot; hai.</li><li><strong>Foreign keys on:</strong> <code>PRAGMA foreign_keys = ON;</code></li><li><strong>WAL mode on:</strong> <code>PRAGMA journal_mode = WAL;</code> — faster reads aur better concurrency.</li></ol>
+<p>Kuch filesystems par WAL available nahi hota, isliye error safely ignore hota hai.</p>
+<ol><li><strong>Schema apply hota hai:</strong> <code>CREATE TABLE IF NOT EXISTS ...</code> aur `CREATE INDEX IF NOT</li></ol>
+<p>EXISTS ...` — pehli baar chalane par tables khud ban jate hain.</p>
+<ol><li><strong>Seed:</strong> agar database khaali hai, <code>seedDemo()</code> demo organisation, users, tasks aur</li></ol>
+<p>meetings bana deta hai.</p>
+<ol><li><strong>App ko database milta hai:</strong> <code>createApp(db)</code> — route modules ko wahi database</li></ol>
+<p>object pass hota hai.</p>
+<p>Code ka asli shape:</p>
+<pre class="code"><code data-language="js">export function openDatabase(dbPath = process.env.DB_PATH || DEFAULT_DB_PATH) {
+  fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+  const db = new DatabaseSync(dbPath);
+  db.exec('PRAGMA foreign_keys = ON;');
+  db.exec('PRAGMA journal_mode = WAL;');
+  db.exec(SCHEMA);
+  return db;
+}</code></pre>
+<h3 id="sec-5-3-query-kaise-chalti-hai">5.3 Query kaise chalti hai</h3>
+<p>Har query prepared statement se chalti hai:</p>
+<pre class="code"><code data-language="js">const rows = db.prepare('SELECT * FROM tasks WHERE assignee_id = ?').all(userId);
+const task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(taskId);
+db.prepare('UPDATE tasks SET status = ? WHERE id = ?').run(status, taskId);</code></pre>
+<p>Isse teen fayde hain:</p>
+<ul><li><strong>SQL injection safe</strong> — values alag se bind hoti hain.</li><li><strong>Fast</strong> — statement reuse hota hai.</li><li><strong>Simple</strong> — koi ORM mapping nahi.</li></ul>
+<h3 id="sec-5-4-tables-ka-kaam">5.4 Tables ka kaam</h3>
+<table><thead><tr><th>Table</th><th>Kaam</th></tr></thead><tbody><tr><td><code>departments</code></td><td>Departments aur unke senior manager</td></tr><tr><td><code>users</code></td><td>4 roles, manager, department, password hash</td></tr><tr><td><code>tasks</code></td><td>Task, status, priority, approval chain, dates</td></tr><tr><td><code>group_members</code></td><td>Group task ke members aur leader</td></tr><tr><td><code>task_events</code></td><td>Permanent audit trail — har action ka record</td></tr><tr><td><code>task_comments</code></td><td>Task par discussion</td></tr><tr><td><code>extension_requests</code></td><td>Due date extension ka two-level approval</td></tr><tr><td><code>ratings</code></td><td>Manager aur senior ki alag 1–5 ratings</td></tr><tr><td><code>meetings</code></td><td>Transcript, AI summary, decisions, action items</td></tr><tr><td><code>notifications</code></td><td>In-app alerts</td></tr><tr><td><code>settings</code></td><td>AI configuration aur API key</td></tr></tbody></table>
+<h3 id="sec-5-5-relations-simple">5.5 Relations (simple)</h3>
+<ul><li>ek <strong>department</strong> ke andar kai <strong>users</strong></li><li>ek <strong>user</strong> kai <strong>tasks</strong> assign kar sakta hai ya bana sakta hai</li><li>ek <strong>task</strong> ke kai <strong>events</strong>, <strong>comments</strong>, <strong>extensions</strong> aur <strong>ratings</strong></li><li>ek <strong>group task</strong> ke andar kai <strong>group_members</strong> aur <strong>group parts</strong> (child tasks)</li><li>ek <strong>meeting</strong> ke action items se naye <strong>tasks</strong> ban sakte hain</li></ul>
+<h3 id="sec-5-6-10-indexes">5.6 10 indexes</h3>
+<p>Indexes in columns par hain jo sabse zyada filter hote hain:</p>
+<p><code>assignee_id</code>, <code>manager_id</code>, <code>senior_manager_id</code>, <code>department_id</code>, <code>status</code>, <code>parent_task_id</code>, <code>task_events.task_id</code>, <code>task_comments.task_id</code>, <code>notifications(user_id, is_read)</code>, <code>meetings.department_id</code>.</p>
+<p>Isse list, dashboard aur approval queries fast rehti hain.</p>
+<h3 id="sec-5-7-database-path-har-environment-mein">5.7 Database path har environment mein</h3>
+<table><thead><tr><th>Environment</th><th><code>DB_PATH</code></th><th>Behaviour</th></tr></thead><tbody><tr><td>Local development</td><td>default</td><td><code>server/data/meridian.db</code></td></tr><tr><td>Tests</td><td><code>:memory:</code></td><td>Temporary in-memory database, file nahi banti</td></tr><tr><td>Render free</td><td><code>/tmp/meridian.db</code></td><td>Temporary; restart par demo data reset</td></tr><tr><td>Railway</td><td><code>/data/meridian.db</code></td><td>Volume par permanent</td></tr><tr><td>Local production check</td><td><code>%TEMP%\meridian.db</code></td><td>Test ke liye safe</td></tr></tbody></table>
+<h3 id="sec-5-8-sqlite-kyun-chuna-gaya">5.8 SQLite kyun chuna gaya</h3>
+<ul><li><strong>Zero setup</strong> — koi database server install nahi.</li><li><strong>Zero cost</strong> — koi managed database plan nahi.</li><li><strong>Portable</strong> — poora data ek file mein; copy/backup aasan.</li><li><strong>Fast</strong> — local file, network round-trip nahi.</li><li><strong>Demo ke liye perfect</strong> — 10–50 logon ki team aaram se chala sakti hai.</li></ul>
+<h3 id="sec-5-9-sqlite-ki-limits-honest-note">5.9 SQLite ki limits (honest note)</h3>
+<ul><li>Ek waqt mein <strong>ek hi writer</strong> — bahut zyada parallel writes par wait hota hai.</li><li>Horizontal scaling ke liye theek nahi — multiple servers ek file share nahi kar sakte.</li><li>Bade organisation (hazaron users) ke liye <strong>PostgreSQL</strong> better rahega.</li><li>Schema migrations ka koi formal system nahi — sirf <code>CREATE TABLE IF NOT EXISTS</code>.</li><li>Data file ko share nahi karna chahiye, kyunki usme password hashes aur AI key hote hain.</li></ul>
+<hr />
+<h2 id="sec-6-architecture-request-ka-safar">6. Architecture — request ka safar</h2>
+<h3 id="sec-6-1-development">6.1 Development</h3>
+<pre class="code"><code>Browser (React + Vite :5173)
+        │
+        │  /api request (proxy)
+        ▼
+Express API (:4000)
+        │
+        ▼
+node:sqlite  ──►  server/data/meridian.db</code></pre>
+<h3 id="sec-6-2-production-single-service">6.2 Production (single service)</h3>
+<pre class="code"><code>Browser
+   │  HTTPS + JSON + Bearer token
+   ▼
+Express (:PORT)
+   ├─ /api/*   → API routes → workflow → database
+   └─ /*       → web/dist (React build)
+        │
+        ▼
+   SQLite file (DB_PATH)</code></pre>
+<p>Isi wajah se manager ko sirf <strong>ek URL</strong> dena padta hai — UI aur API alag nahi dikhte.</p>
+<h3 id="sec-6-3-ek-api-request-ka-flow">6.3 Ek API request ka flow</h3>
+<ol><li>Browser <code>fetch</code> se request bhejta hai, saath mein Bearer token.</li><li>Express route match karta hai.</li><li>Auth middleware token verify karta hai aur user nikalta hai.</li><li>Zod request body validate karta hai.</li><li>RBAC check hota hai — user is data/action ka haqdaar hai ya nahi.</li><li>Workflow function business rule lagata hai (status, approval level, etc.).</li><li>Prepared statement database par chalti hai.</li><li>Audit event aur notification likhe jate hain.</li><li>JSON response browser ko jata hai.</li></ol>
+<hr />
+<h2 id="sec-7-api-39-endpoints">7. API — 39 endpoints</h2>
+<table><thead><tr><th>Area</th><th>Endpoints</th><th>Kaam</th></tr></thead><tbody><tr><td>Authentication</td><td>4</td><td>Login, current user, change password, session check</td></tr><tr><td>Users</td><td>2</td><td>Directory aur team list (scope ke andar)</td></tr><tr><td>Tasks</td><td>9</td><td>List, detail, create, edit, actions, comments, decision, extension, rating</td></tr><tr><td>Approvals</td><td>1</td><td>Pending approvals ka combined queue</td></tr><tr><td>Reports</td><td>2</td><td>Person report aur team report</td></tr><tr><td>Meetings</td><td>5</td><td>List, detail, create, AI process, action item se task</td></tr><tr><td>AI</td><td>1</td><td>Workload aur due-date insights</td></tr><tr><td>Notifications</td><td>3</td><td>List, mark one read, mark all read</td></tr><tr><td>Dashboard</td><td>1</td><td>Stats, action queue, focus, team pulse</td></tr><tr><td>Administration</td><td>10</td><td>Users, departments, AI settings, password reset</td></tr><tr><td>Health</td><td>1</td><td><code>/api/health</code> — deployment health check</td></tr></tbody></table>
+<p><strong>Total: 38 business routes + 1 health check = 39.</strong></p>
+<hr />
+<h2 id="sec-8-authentication-aur-security">8. Authentication aur security</h2>
+<table><thead><tr><th>Layer</th><th>Kaise</th></tr></thead><tbody><tr><td>Password storage</td><td><code>scrypt</code> + random 16-byte salt, 64-byte hash</td></tr><tr><td>Password compare</td><td><code>crypto.timingSafeEqual</code> (timing attack safe)</td></tr><tr><td>Session</td><td>HMAC-SHA256 signed token, 7 din expiry</td></tr><tr><td>Token transport</td><td><code>Authorization: Bearer &lt;token&gt;</code></td></tr><tr><td>Login protection</td><td>8 galat attempts / 15 minute per IP + email</td></tr><tr><td>Authorization</td><td>Server-side RBAC har route par</td></tr><tr><td>CORS</td><td><code>CORS_ORIGIN</code> se sirf allowed origins</td></tr><tr><td>Security headers</td><td><code>nosniff</code>, <code>X-Frame-Options: DENY</code>, referrer aur permissions policy</td></tr><tr><td>Audit</td><td>Har status change, comment aur decision <code>task_events</code> mein</td></tr><tr><td>Admin boundary</td><td>Admin workflow actions nahi kar sakta</td></tr></tbody></table>
+<blockquote>Passwords kabhi API se wapas nahi bheje jate. AI key sirf masked hint ke roop mein dikhti hai.</blockquote>
+<hr />
+<h2 id="sec-9-roles-aur-permissions">9. Roles aur permissions</h2>
+<table><thead><tr><th>Capability</th><th>Employee</th><th>Manager</th><th>Senior Manager</th><th>Admin</th></tr></thead><tbody><tr><td>Apne tasks</td><td>Haan</td><td>Haan</td><td>Haan</td><td>Read-only</td></tr><tr><td>Assign karna</td><td>Khud ko</td><td>Direct reports</td><td>Department</td><td>Nahi</td></tr><tr><td>Activation approve</td><td>Nahi</td><td>Haan</td><td>Apni line</td><td>Nahi</td></tr><tr><td>Completion review</td><td>Nahi</td><td>Level 1</td><td>Level 2</td><td>Nahi</td></tr><tr><td>Team oversight</td><td>Nahi</td><td>Direct reports</td><td>Department</td><td>Sab</td></tr><tr><td>Reports</td><td>Apne</td><td>Apne + reports</td><td>Department</td><td>Organisation</td></tr><tr><td>Meetings</td><td>Apni/participant</td><td>Apne + reports</td><td>Department</td><td>Sab</td></tr><tr><td>Raw transcript</td><td>Apni banayi</td><td>Creator/participant ke manager</td><td>Department</td><td>Sab</td></tr><tr><td>Users/departments/AI</td><td>Nahi</td><td>Nahi</td><td>Nahi</td><td>Haan</td></tr></tbody></table>
+<p>Ye rules <strong>sirf UI mein nahi</strong> — API har request par khud check karta hai. URL badal kar bhi doosri team ka data nahi khul sakta.</p>
+<hr />
+<h2 id="sec-10-core-workflow-technical-summary">10. Core workflow — technical summary</h2>
+<ul><li><strong>Task create:</strong> employee apne liye banaye to <code>PENDING_CREATION_APPROVAL</code>; manager</li></ul>
+<p>kisi ko assign kare to seedha <code>ACTIVE</code>.</p>
+<ul><li><strong>Activation:</strong> sirf assigned manager approve/reject karega; reject par reason</li></ul>
+<p>compulsory; creator revise karke resubmit karega.</p>
+<ul><li><strong>Start:</strong> sirf assignee, sirf <code>ACTIVE</code> se.</li><li><strong>Completion:</strong> <code>ACTIVE / IN_PROGRESS / REWORK</code> se submit → <code>PENDING_MANAGER_REVIEW</code> →</li></ul>
+<p>manager approve → <code>PENDING_SENIOR_REVIEW</code> → senior approve → <code>COMPLETED</code>.</p>
+<ul><li><strong>Manager reject:</strong> <code>REWORK</code> (assignee ke paas).</li><li><strong>Senior reject:</strong> <code>RETURNED_TO_MANAGER</code>; manager <code>REQUEST_CORRECTIONS</code> ya</li></ul>
+<p><code>RESUBMIT_TO_SENIOR</code> chune.</p>
+<ul><li><strong>Extension:</strong> sirf assignee, kaam ke dauraan, naya date purane se baad ka; manager →</li></ul>
+<p>senior; dono approve par due date update.</p>
+<ul><li><strong>Ratings:</strong> sirf <code>COMPLETED</code> par, sirf assigned manager/senior, 1–5 + remarks.</li><li><strong>Cancel:</strong> creator ya assigned manager, reason ke saath.</li><li><strong>Group Mode A:</strong> sab contribution tasks complete hone par hi consolidated submit.</li><li><strong>Group Mode B:</strong> leader kabhi bhi submit kar sakta hai; contributions track hoti hain.</li></ul>
+<p>Poora user-facing explanation <code>USER_GUIDE.md</code> mein hai.</p>
+<hr />
+<h2 id="sec-11-ai-integration">11. AI integration</h2>
+<ul><li><strong>Provider:</strong> OpenAI-compatible Chat Completions API.</li><li><strong>Default endpoint:</strong> <code>https://api.openai.com/v1</code></li><li><strong>Default model:</strong> <code>gpt-4o-mini</code></li><li><strong>Temperature:</strong> <code>0.2</code> (stable, factual output)</li><li><strong>Call:</strong> native <code>fetch</code> — koi AI SDK nahi.</li><li><strong>Configuration:</strong> Admin → AI settings (DB mein save).</li><li><strong>Key security:</strong> API se sirf masked hint; raw key kabhi return nahi.</li><li><strong>Fallback:</strong> key na ho ya provider fail ho, to built-in <strong>heuristic</strong> extractor chalta</li></ul>
+<p>hai. UI mein source label dikhta hai:</p>
+<ul><li><strong>Scope:</strong> AI insights sirf us data se bante hain jo user dekh sakta hai.</li></ul>
+<p>AI meeting se <strong>summary, decisions aur action items</strong> nikalta hai. Har action item ek click mein governed task ban sakta hai.</p>
+<hr />
+<h2 id="sec-12-reports-aur-insights">12. Reports aur insights</h2>
+<ul><li><strong>Assigned work:</strong> creator ≠ assignee — manager ne assign kiya.</li><li><strong>Self-created work:</strong> creator = assignee — employee ne khud banaya.</li><li><strong>Combined:</strong> dono ka total, reference ke liye.</li><li><strong>Metrics:</strong> total, completed, open, overdue, on-time rate, average cycle days,</li></ul>
+<p>average effort hours, manager rating, senior rating.</p>
+<ul><li><strong>CSV export:</strong> browser mein generate hota hai.</li><li><strong>Scope:</strong> employee apne, manager apne + reports, senior department, admin</li></ul>
+<p>organisation.</p>
+<hr />
+<h2 id="sec-13-project-structure">13. Project structure</h2>
+<pre class="code"><code>Default Project/
+├─ package.json           Monorepo root + scripts
+├─ scripts/
+│  ├─ dev.js              API + Vite dono start
+│  └─ build-docs.mjs      Markdown docs → HTML
+├─ server/
+│  ├─ src/                24 JavaScript files
+│  │  ├─ index.js         Entry point (:4000)
+│  │  ├─ app.js           Express app + static UI
+│  │  ├─ db.js            SQLite connection + schema
+│  │  ├─ auth.js          Hashing + tokens
+│  │  ├─ rbac.js          Role/team scoping
+│  │  ├─ workflow.js      Task lifecycle (largest module)
+│  │  ├─ reports.js       Split reports
+│  │  ├─ ai.js            AI + fallback
+│  │  └─ routes/          10 route files
+│  ├─ tests/              12 acceptance scenarios
+│  └─ package.json
+├─ web/
+│  ├─ src/
+│  │  ├─ pages/           11 pages
+│  │  ├─ components/      Shared UI
+│  │  ├─ context/         Auth + Toast
+│  │  ├─ hooks/           useApi
+│  │  ├─ lib/             api.ts, types, constants, format
+│  │  ├─ App.tsx          Routing + role guards
+│  │  └─ styles.css       Design system
+│  ├─ index.html
+│  ├─ vite.config.ts
+│  └─ package.json
+├─ docs/                  Printable HTML + PDF guides
+├─ Dockerfile             Multi-stage production image
+├─ render.yaml            Render blueprint
+├─ railway.json           Railway health check
+└─ DEPLOY.md              Hosting guide</code></pre>
+<hr />
+<h2 id="sec-14-dependencies-sirf-12-direct-packages">14. Dependencies — sirf 12 direct packages</h2>
+<p><strong>Backend (3):</strong> <code>express</code>, <code>zod</code>, <code>cors</code></p>
+<p><strong>Frontend runtime (4):</strong> <code>react</code>, <code>react-dom</code>, <code>react-router-dom</code>, <code>lucide-react</code></p>
+<p><strong>Frontend dev (5):</strong> <code>vite</code>, <code>typescript</code>, <code>@vitejs/plugin-react</code>, <code>@types/react</code>, <code>@types/react-dom</code></p>
+<p>Koi Docker dependency, MongoDB, MySQL, Prisma, Tailwind, Redux ya Python use nahi hua. <code>node_modules</code> ka size approx <strong>101 MB</strong> hai.</p>
+<hr />
+<h2 id="sec-15-build-run-test-aur-deploy">15. Build, run, test aur deploy</h2>
+<table><thead><tr><th>Kaam</th><th>Command</th></tr></thead><tbody><tr><td>Install</td><td><code>npm install</code></td></tr><tr><td>Demo data seed</td><td><code>npm run seed</code></td></tr><tr><td>Dev (API + UI)</td><td><code>npm run dev</code></td></tr><tr><td>Sirf API</td><td><code>npm run dev:server</code></td></tr><tr><td>Sirf UI</td><td><code>npm run dev:web</code></td></tr><tr><td>Production build</td><td><code>npm run build</code></td></tr><tr><td>Production run</td><td><code>npm start</code></td></tr><tr><td>Tests (12)</td><td><code>npm test</code></td></tr><tr><td>Type check</td><td><code>npx tsc -p web/tsconfig.json --noEmit</code></td></tr><tr><td>Docs build</td><td><code>npm run docs</code></td></tr></tbody></table>
+<h3 id="sec-deploy-kaise-hota-hai">Deploy kaise hota hai</h3>
+<ol><li><strong>Dockerfile</strong> multi-stage build karta hai:<ul><li>Stage 1: React UI build (<code>web/dist</code>).</li><li>Stage 2: sirf server dependencies + built UI.</li></ul></li><li>Container <code>node server/src/index.js</code> chalata hai.</li><li>Express <code>$PORT</code> par UI aur <code>/api</code> dono serve karta hai.</li><li>Health check: <code>/api/health</code>.</li><li><strong>Render free:</strong> <code>/tmp/meridian.db</code> — data restart par reset.</li><li><strong>Railway:</strong> <code>/data/meridian.db</code> — volume ke saath permanent.</li><li><strong>Vercel:</strong> sirf UI host ho sakti hai; SQLite Vercel Functions par persist nahi hota.</li></ol>
+<hr />
+<h2 id="sec-16-testing-aur-quality">16. Testing aur quality</h2>
+<ul><li><strong>Runner:</strong> Node ka built-in <code>node:test</code> (Jest/Vitest nahi).</li><li><strong>Assertions:</strong> <code>node:assert/strict</code>.</li><li><strong>Database:</strong> in-memory SQLite — test ke baad kuch nahi bachta.</li><li><strong>Scenarios:</strong> 12.</li></ul>
+<p>Cover kiya gaya:</p>
+<ol><li>Demo accounts authenticate hote hain.</li><li>Self-created task activation ke bina start nahi hota; self-approval block hai.</li><li>Completion manager → senior order follow karta hai.</li><li>Senior rejection manager ke paas jata hai, employee ke paas nahi.</li><li>Extension dono approval ke baad hi due date badalti hai.</li><li>Group Mode A ke parts isolated hain aur sab complete hone chahiye.</li><li>Group Mode B mein leader-only submission allowed hai.</li><li>Reports assigned aur self-created ko alag rakhte hain.</li><li>Transcript role/team ke hisaab se restricted hai.</li><li>Admin platform manage karta hai lekin workflow mein nahi aata.</li><li>Manager apni team ke bahar ka task nahi padh sakta.</li><li>AI insights authorised scope se bahar nahi jate.</li></ol>
+<p>Frontend ke liye TypeScript type-check (<code>tsc --noEmit</code>) aur production build (<code>vite build</code>) chalaye jate hain.</p>
+<hr />
+<h2 id="sec-17-important-design-decisions">17. Important design decisions</h2>
+<ol><li><strong>Server-authoritative permissions</strong> — UI button chhupana security nahi hai; API</li></ol>
+<p>har request par decide karta hai.</p>
+<ol><li><strong>Activation gate</strong> — employee ka self-created kaam manager ki approval ke bina</li></ol>
+<p>shuru nahi ho sakta.</p>
+<ol><li><strong>Two-tier completion</strong> — manager aur senior, dono zaroori; koi level skip nahi.</li><li><strong>Senior rejection → manager</strong> — employee ko seedha wapas nahi bheja jata.</li><li><strong>Due date immutable</strong> — sirf extension workflow se badalti hai.</li><li><strong>Separate ratings</strong> — manager aur senior ki rating alag records hain.</li><li><strong>Split reporting</strong> — assigned aur self-created work kabhi mix nahi hote.</li><li><strong>Transcript privacy</strong> — raw text sirf authorised roles ko.</li><li><strong>Admin read-only</strong> — platform management aur workflow alag rakhe gaye.</li><li><strong>AI optional</strong> — key na ho to deterministic fallback, feature band nahi hota.</li><li><strong>Zero native dependencies</strong> — <code>node:sqlite</code> se install/compile simple.</li><li><strong>Single-service runtime</strong> — UI + API ek URL par, deployment aasan.</li><li><strong>Audit trail</strong> — har action ka permanent record.</li><li><strong>Monorepo, clean separation</strong> — <code>server/</code> aur <code>web/</code> alag, lekin ek command se</li></ol>
+<p>chalte hain.</p>
+<hr />
+<h2 id="sec-18-limitations-aur-future-scope">18. Limitations aur future scope</h2>
+<table><thead><tr><th>Limitation</th><th>Asar</th><th>Future fix</th></tr></thead><tbody><tr><td>SQLite single writer</td><td>Bahut zyada parallel writes slow</td><td>PostgreSQL/Neon par migrate</td></tr><tr><td>No migration framework</td><td>Schema changes manual</td><td>Prisma/Drizzle migrations</td></tr><tr><td>Backend JavaScript</td><td>Runtime type safety kam</td><td>TypeScript backend</td></tr><tr><td>In-memory rate limit</td><td>Restart par reset, per-instance</td><td>Redis-based limiter</td></tr><tr><td>In-app notifications only</td><td>Email/SMS nahi</td><td>Email/push service</td></tr><tr><td>AI external dependency</td><td>Provider down ho to fallback</td><td>Local model option</td></tr><tr><td>Free hosting ephemeral disk</td><td>Data reset ho sakta hai</td><td>Railway volume / managed DB</td></tr><tr><td>No file attachments</td><td>Task ke saath files nahi</td><td>Object storage (S3/R2)</td></tr></tbody></table>
+<hr />
+<h2 id="sec-19-manager-ke-common-sawal">19. Manager ke common sawal</h2>
+<p><strong>Q: Project kaunsi language mein bana hai?</strong> Frontend TypeScript/React mein, backend JavaScript/Node.js mein, aur database SQL (SQLite) hai.</p>
+<p><strong>Q: Frontend aur backend alag hain ya ek?</strong> Code alag folders (<code>web/</code> aur <code>server/</code>) mein hai, lekin production mein ek hi service dono ko serve karti hai — user ko ek URL dikhta hai.</p>
+<p><strong>Q: Database connection kaise hota hai?</strong> SQLite embedded hai. <code>DB_PATH</code> se file ka path milta hai, <code>new DatabaseSync(path)</code> se file open hoti hai, phir schema aur PRAGMAs apply hote hain. Koi host, port ya password nahi.</p>
+<p><strong>Q: ORM kyun nahi use kiya?</strong> Project chhota aur clear rakhne ke liye. Raw SQL + prepared statements safe aur fast hain, aur extra dependency nahi chahiye.</p>
+<p><strong>Q: Data kitna secure hai?</strong> Passwords scrypt se hashed, tokens HMAC-signed, har request par RBAC, audit trail, aur sensitive keys server-side.</p>
+<p><strong>Q: AI kaun sa use hua hai?</strong> OpenAI-compatible API, default <code>gpt-4o-mini</code>. Key na ho to built-in analysis chalta hai.</p>
+<p><strong>Q: Kitne users ke liye theek hai?</strong> Demo aur chhoti/medium team (approx 10–50 users) ke liye achha. Bade scale ke liye PostgreSQL par shift karna chahiye.</p>
+<p><strong>Q: Hosting ka kya setup hai?</strong> Docker image ek hi port par UI + API chalati hai. Render par free demo, Railway par persistent volume ke saath.</p>
+<p><strong>Q: Tests hain?</strong> Haan — 12 automated scenarios, in-memory database par.</p>
+<hr />
+<h2 id="sec-20-glossary-technical-shabd-simple-mein">20. Glossary — technical shabd simple mein</h2>
+<table><thead><tr><th>Shabd</th><th>Matlab</th></tr></thead><tbody><tr><td><strong>Frontend</strong></td><td>Jo user browser mein dekhta hai</td></tr><tr><td><strong>Backend</strong></td><td>Server par chalne wala logic aur API</td></tr><tr><td><strong>API</strong></td><td>Frontend aur backend ke beech baat karne ka rasta</td></tr><tr><td><strong>Database</strong></td><td>Data save karne ki jagah</td></tr><tr><td><strong>SQL</strong></td><td>Database se baat karne ki language</td></tr><tr><td><strong>ORM</strong></td><td>Database ko objects ki tarah use karne ki library</td></tr><tr><td><strong>Migration</strong></td><td>Database schema ko safely badalne ka process</td></tr><tr><td><strong>Token</strong></td><td>Login ke baad mila hua signed pass</td></tr><tr><td><strong>Hash</strong></td><td>Password ko irreversible form mein badalna</td></tr><tr><td><strong>RBAC</strong></td><td>Role ke hisaab se access control</td></tr><tr><td><strong>WAL</strong></td><td>SQLite ka fast write mode</td></tr><tr><td><strong>Docker</strong></td><td>App ko ek portable container mein pack karna</td></tr><tr><td><strong>Environment variable</strong></td><td>Server ki configuration value (jaise <code>DB_PATH</code>)</td></tr><tr><td><strong>Seed</strong></td><td>Demo data automatically bharna</td></tr><tr><td><strong>Health check</strong></td><td>Server zinda hai ya nahi, ye batane wala endpoint</td></tr></tbody></table>
+<hr />
+<h2 id="sec-21-ek-line-mein">21. Ek line mein</h2>
+<blockquote><strong>React + TypeScript frontend, Node + Express JavaScript backend, SQLite embedded database, raw SQL + prepared statements, aur optional AI — sab ek hi service mein deploy ho jata hai.</strong></blockquote>
+    </main>
+
+    <footer class="doc-foot">
+      <span>Meridian · Technical Document</span>
+      <span>Updated 2026-11-03</span>
+    </footer>
+  </div>
+</body>
+</html>
