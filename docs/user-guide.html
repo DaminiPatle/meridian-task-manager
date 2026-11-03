@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Meridian — First-Time User Guide</title>
+<style>
+  :root {
+    --ink: #1f2430;
+    --muted: #5b6475;
+    --line: #dfe4ec;
+    --soft: #f6f8fb;
+    --brand: #4f46e5;
+    --brand-soft: #eef2ff;
+    --amber-soft: #fff8e6;
+    --amber-line: #d99a00;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: #eef1f6;
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+  }
+
+  .sheet {
+    max-width: 940px;
+    margin: 32px auto;
+    padding: 56px 64px 64px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 18px 60px rgba(25, 34, 52, 0.12);
+  }
+
+  header.doc-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    padding-bottom: 22px;
+    border-bottom: 3px solid var(--brand);
+    margin-bottom: 8px;
+  }
+
+  .mark {
+    flex: 0 0 auto;
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: var(--brand);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  .doc-head h1 {
+    margin: 0;
+    font-size: 30px;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  .doc-head p {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .print-bar {
+    display: flex;
+    justify-content: flex-end;
+    margin: 18px 0 0;
+  }
+
+  .print-bar button {
+    border: 0;
+    border-radius: 8px;
+    background: var(--brand);
+    color: #fff;
+    padding: 9px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .print-bar button:hover { background: #4338ca; }
+
+  nav.toc {
+    margin: 26px 0 34px;
+    padding: 20px 24px;
+    background: var(--soft);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+  }
+
+  nav.toc h2 {
+    margin: 0 0 10px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  nav.toc ol {
+    margin: 0;
+    padding-left: 20px;
+    columns: 2;
+    column-gap: 32px;
+  }
+
+  nav.toc li {
+    margin: 4px 0;
+    font-size: 14px;
+    break-inside: avoid;
+  }
+
+  nav.toc a {
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+  }
+
+  nav.toc a:hover { border-bottom-color: var(--brand); }
+
+  main h1 { display: none; }
+
+  main h2 {
+    margin: 42px 0 14px;
+    padding-top: 26px;
+    font-size: 24px;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    border-top: 1px solid var(--line);
+  }
+
+  main h3 {
+    margin: 28px 0 10px;
+    font-size: 18px;
+    color: #2c3444;
+  }
+
+  main h4 { margin: 22px 0 8px; font-size: 16px; }
+
+  p { margin: 0 0 14px; }
+
+  a { color: var(--brand); }
+
+  strong { color: #151a24; }
+
+  code {
+    background: var(--soft);
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    padding: 1px 5px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    font-size: 0.88em;
+  }
+
+  pre.code {
+    margin: 18px 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    background: #1f2430;
+    color: #e8ecf4;
+    border-radius: 10px;
+    font-size: 13.5px;
+    line-height: 1.55;
+  }
+
+  pre.code code {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  blockquote {
+    margin: 20px 0;
+    padding: 14px 18px;
+    background: var(--amber-soft);
+    border-left: 4px solid var(--amber-line);
+    border-radius: 0 8px 8px 0;
+    color: #4a3b14;
+  }
+
+  blockquote p { margin: 0; }
+
+  table {
+    width: 100%;
+    margin: 18px 0 22px;
+    border-collapse: collapse;
+    font-size: 14.5px;
+  }
+
+  th, td {
+    padding: 9px 12px;
+    border: 1px solid var(--line);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    background: var(--soft);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  tbody tr:nth-child(even) { background: #fbfcfe; }
+
+  ul, ol { margin: 0 0 16px; padding-left: 24px; }
+
+  li { margin: 5px 0; }
+
+  hr {
+    border: 0;
+    border-top: 1px solid var(--line);
+    margin: 34px 0;
+  }
+
+  footer.doc-foot {
+    margin-top: 46px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 12.5px;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  @media (max-width: 720px) {
+    .sheet { margin: 0; border-radius: 0; padding: 28px 20px 40px; }
+    nav.toc ol { columns: 1; }
+    .doc-head h1 { font-size: 24px; }
+    th { white-space: normal; }
+  }
+
+  @media print {
+    @page { size: A4; margin: 16mm 14mm; }
+    body { background: #fff; font-size: 11pt; }
+    .sheet { margin: 0; padding: 0; box-shadow: none; border-radius: 0; max-width: none; }
+    .print-bar { display: none; }
+    nav.toc { break-after: page; }
+    main h2 { break-after: avoid; }
+    main h3 { break-after: avoid; }
+    table, tr, blockquote, pre.code { break-inside: avoid; }
+    a { color: var(--ink); text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="doc-head">
+      <div class="mark">M</div>
+      <div>
+        <h1>Meridian — First-Time User Guide</h1>
+        <p>Kaam kaise aage badhta hai, kaun kya kar sakta hai, aur pehle din kya karein.</p>
+      </div>
+    </header>
+
+    <div class="print-bar">
+      <button type="button" onclick="window.print()">Print / Save as PDF</button>
+    </div>
+
+    <nav class="toc">
+      <h2>Contents</h2>
+      <ol>
+<li><a href="#sec-1-meridian-kya-hai">1. Meridian kya hai?</a></li>
+<li><a href="#sec-2-kaun-kaun-use-karega-4-roles">2. Kaun kaun use karega (4 roles)</a></li>
+<li><a href="#sec-3-pehli-baar-login-kaise-karein">3. Pehli baar login kaise karein</a></li>
+<li><a href="#sec-4-ek-nazar-mein-screen">4. Ek nazar mein screen</a></li>
+<li><a href="#sec-5-sabse-important-task-ka-lifecycle">5. Sabse important: task ka lifecycle</a></li>
+<li><a href="#sec-6-har-role-ke-liye-10-minute-tour">6. Har role ke liye 10-minute tour</a></li>
+<li><a href="#sec-7-meetings-ai">7. Meetings + AI</a></li>
+<li><a href="#sec-8-reports">8. Reports</a></li>
+<li><a href="#sec-9-ai-insights">9. AI Insights</a></li>
+<li><a href="#sec-10-notifications">10. Notifications</a></li>
+<li><a href="#sec-11-privacy-kaun-kya-dekh-sakta-hai">11. Privacy: kaun kya dekh sakta hai</a></li>
+<li><a href="#sec-12-common-first-time-problems-faq">12. Common first-time problems (FAQ)</a></li>
+<li><a href="#sec-13-status-glossary-quick-reference">13. Status glossary (quick reference)</a></li>
+<li><a href="#sec-14-demo-accounts">14. Demo accounts</a></li>
+<li><a href="#sec-15-manager-ke-liye-3-minute-demo-script">15. Manager ke liye 3-minute demo script</a></li>
+<li><a href="#sec-16-ek-line-mein-yaad-rakhein">16. Ek line mein yaad rakhein</a></li>
+      </ol>
+    </nav>
+
+    <main>
+<h1 id="sec-meridian-first-time-user-guide">Meridian — First-Time User Guide</h1>
+<blockquote><strong>Ye guide kis ke liye hai?</strong> Jo pehli baar Meridian kholega — manager, team lead, employee ya administrator. Yahan har screen, har button aur har approval ka matlab simple bhasha mein samjhaya gaya hai. Technical knowledge ki zaroorat nahi hai.</blockquote>
+<ul><li><strong>Login link:</strong> jo link aapko share kiya gaya hai (hosting ke baad milta hai).</li><li><strong>Demo password:</strong> <code>demo1234</code></li></ul>
+<hr />
+<h2 id="sec-1-meridian-kya-hai">1. Meridian kya hai?</h2>
+<p>Meridian ek <strong>team task manager</strong> hai. Iska basic idea simple hai:</p>
+<blockquote>Kaam approval ke through aage badhta hai — approval ko bypass nahi kiya ja sakta.</blockquote>
+<p>Aap yahan ye sab kar sakte hain:</p>
+<ul><li>task banana, assign karna aur uska status track karna</li><li>do level ki approval: pehle <strong>Manager</strong>, phir <strong>Senior Manager</strong></li><li>due date badalne ke liye proper extension request</li><li>manager aur senior manager ki <strong>alag-alag ratings</strong></li><li>meeting transcript se AI ki madad se summary, decisions aur action items nikalna</li><li>team-wise reports aur workload risk dekhna</li></ul>
+<p>Sab kuch role ke hisaab se limited hai. Ek employee ko dusri team ka data nahi dikhta, aur Admin kaam ko approve nahi kar sakta.</p>
+<hr />
+<h2 id="sec-2-kaun-kaun-use-karega-4-roles">2. Kaun kaun use karega (4 roles)</h2>
+<table><thead><tr><th>Role</th><th>Kaun hai</th><th>Main kaam</th></tr></thead><tbody><tr><td><strong>Employee</strong></td><td>Team member</td><td>Apne tasks banana, kaam karna, complete karke submit karna, extension maangna</td></tr><tr><td><strong>Manager</strong></td><td>Team lead</td><td>Task assign karna, activation approve karna, completion review karna, rating dena</td></tr><tr><td><strong>Senior Manager</strong></td><td>Department head</td><td>Final approval dena, department ke reports aur workload dekhna, rating dena</td></tr><tr><td><strong>Administrator</strong></td><td>System admin</td><td>Users, departments aur AI settings manage karna. Tasks mein sirf read-only</td></tr></tbody></table>
+<blockquote><strong>Important:</strong> Administrator task create, approve ya rate <strong>nahi</strong> kar sakta. Ye jaan-boojh kar aisa design hai — platform manage karne wala workflow mein hissa nahi leta.</blockquote>
+<hr />
+<h2 id="sec-3-pehli-baar-login-kaise-karein">3. Pehli baar login kaise karein</h2>
+<ol><li>Browser mein apna Meridian link kholein.</li><li>Email aur password daalein.</li><li><strong>Sign in</strong> dabayein.</li><li>Pehli baar login karne par aap seedha <strong>Dashboard</strong> par pahunch jayenge.</li></ol>
+<p>Demo accounts neeche section 14 mein diye hain. Login page par accounts ki list nahi dikhti — credentials aapko alag se milenge.</p>
+<blockquote><strong>Tip:</strong> Agar page 30–60 second le raha hai, to hosting service sleep mode se wake ho rahi hai. Thoda intezaar karein, phir normal chalega.</blockquote>
+<hr />
+<h2 id="sec-4-ek-nazar-mein-screen">4. Ek nazar mein screen</h2>
+<p>Login ke baad left side mein menu dikhega:</p>
+<table><thead><tr><th>Menu</th><th>Kya milta hai</th></tr></thead><tbody><tr><td><strong>Dashboard</strong></td><td>Aapke liye zaroori kaam, overdue tasks, team pulse, recent activity</td></tr><tr><td><strong>Tasks</strong></td><td>Saare tasks — List ya Board view, filter aur search ke saath</td></tr><tr><td><strong>Action Center</strong></td><td>Aapke decision ka intezaar karne wali cheezein — activation, reviews, extensions, ratings</td></tr><tr><td><strong>Team</strong></td><td>Aapke scope ke log aur unka workload</td></tr><tr><td><strong>Reports</strong></td><td>Assigned vs self-created work ka split report, CSV export</td></tr><tr><td><strong>Meetings</strong></td><td>Meeting transcript, AI summary, decisions, action items</td></tr><tr><td><strong>AI Insights</strong></td><td>Workload aur due-date risk ki AI analysis</td></tr><tr><td><strong>Administration</strong></td><td>Sirf Admin ko — users, departments, AI settings</td></tr></tbody></table>
+<p>Top bar par <strong>notification bell</strong> hai. Jab aapke paas approval, rating ya extension ka kaam aata hai, wahan red dot dikhta hai.</p>
+<hr />
+<h2 id="sec-5-sabse-important-task-ka-lifecycle">5. Sabse important: task ka lifecycle</h2>
+<p>Har task ek fixed raaste se guzarta hai. Ye samajh liya to baaki sab aasan hai.</p>
+<h3 id="sec-5-1-task-banane-ke-do-tarike">5.1 Task banane ke do tarike</h3>
+<table><thead><tr><th>Tarika</th><th>Kaun banata hai</th><th>Shuru mein status</th><th>Approval chahiye?</th></tr></thead><tbody><tr><td><strong>Manager assign kare</strong></td><td>Manager ya Senior Manager</td><td><strong>Active</strong></td><td>Nahi — seedha kaam shuru ho sakta hai</td></tr><tr><td><strong>Employee khud banaye</strong></td><td>Employee apne liye</td><td><strong>Awaiting activation</strong></td><td>Haan — Manager ka approval zaroori</td></tr></tbody></table>
+<blockquote>Employee apne liye task bana kar bhi seedha kaam shuru <strong>nahi</strong> kar sakta. Pehle manager ko activation approve karna padta hai.</blockquote>
+<h3 id="sec-5-2-status-ka-matlab">5.2 Status ka matlab</h3>
+<table><thead><tr><th>Status (screen par)</th><th>Matlab</th></tr></thead><tbody><tr><td><strong>Awaiting activation</strong></td><td>Employee ne task banaya, manager ke approval ka intezaar</td></tr><tr><td><strong>Activation rejected</strong></td><td>Manager ne reject kiya; ab creator revise karke resubmit karega</td></tr><tr><td><strong>Active</strong></td><td>Task approved hai, kaam shuru kiya ja sakta hai</td></tr><tr><td><strong>In progress</strong></td><td>Assignee ne kaam shuru kar diya</td></tr><tr><td><strong>Manager review</strong></td><td>Assignee ne complete karke submit kiya; manager ke review ka intezaar</td></tr><tr><td><strong>Senior review</strong></td><td>Manager ne approve kiya; ab senior manager ka final approval baaki</td></tr><tr><td><strong>Returned to manager</strong></td><td>Senior ne wapas manager ko bheja; manager decide karega</td></tr><tr><td><strong>Needs rework</strong></td><td>Correction maangi gayi; assignee dobara kaam karega</td></tr><tr><td><strong>Completed</strong></td><td>Dono level ki approval ho gayi; ab ratings ka time</td></tr><tr><td><strong>Cancelled</strong></td><td>Task bina complete hue band</td></tr></tbody></table>
+<h3 id="sec-5-3-activation-approval-sirf-self-created-tasks">5.3 Activation approval (sirf self-created tasks)</h3>
+<ol><li>Employee <strong>Tasks → New task</strong> se apne liye task banata hai.</li><li>Task <strong>Awaiting activation</strong> mein chala jata hai.</li><li>Manager ke <strong>Action Center</strong> page par wo task aata hai.</li><li>Manager <strong>Approve activation</strong> dabata hai → task <strong>Active</strong> ho jata hai.</li><li>Agar manager <strong>Reject activation</strong> dabaye, to reason likhna zaroori hai → task <strong>Activation rejected</strong>.</li><li>Ab sirf task banane wala employee use edit karke <strong>Resubmit for activation</strong> kar sakta hai.</li></ol>
+<h3 id="sec-5-4-kaam-shuru-karna">5.4 Kaam shuru karna</h3>
+<ol><li>Assignee task kholega.</li><li><strong>Start work</strong> dabayega.</li><li>Status <strong>In progress</strong> ho jayega aur manager ko notification chala jayega.</li></ol>
+<blockquote>Sirf assignee hi task start kar sakta hai.</blockquote>
+<h3 id="sec-5-5-completion-do-level-ki-approval">5.5 Completion — do level ki approval</h3>
+<p>Ye sabse important rule hai: <strong>completion kabhi ek approval se poori nahi hoti.</strong></p>
+<ol><li>Assignee kaam khatam karke <strong>Submit for completion</strong> dabata hai.</li><li>Status <strong>Manager review</strong> ho jata hai.</li><li>Manager check karke <strong>Approve &amp; send to senior</strong> dabata hai.</li><li>Status <strong>Senior review</strong> ho jata hai.</li><li>Senior manager <strong>Final approval</strong> dabata hai.</li><li>Tab ja kar status <strong>Completed</strong> hota hai.</li></ol>
+<p>Agar manager ko kaam theek nahi laga:</p>
+<ul><li>Manager <strong>Return for rework</strong> dabata hai → reason likhna zaroori → task wapas assignee ke paas <strong>Needs rework</strong> mein.</li></ul>
+<h3 id="sec-5-6-senior-reject-kare-to-kya-hota-hai">5.6 Senior reject kare to kya hota hai?</h3>
+<p>Ye rule naye users ko confuse karta hai, isliye dhyan se padhein:</p>
+<blockquote><strong>Senior manager reject kare to task employee ke paas nahi jata — wo Manager ke paas jata hai.</strong></blockquote>
+<p>Aage manager ke paas do raste hain:</p>
+<table><thead><tr><th>Manager ka decision</th><th>Result</th></tr></thead><tbody><tr><td><strong>Request corrections</strong></td><td>Task assignee ke paas <strong>Needs rework</strong> mein jata hai</td></tr><tr><td><strong>Resubmit to senior</strong></td><td>Wahi kaam bina employee change ke dobara senior ke paas jata hai</td></tr></tbody></table>
+<p>Iska matlab: senior-level rejection ki responsibility manager ki hai.</p>
+<h3 id="sec-5-7-due-date-extension-kaise-maangein">5.7 Due date extension kaise maangein</h3>
+<p>Due date seedha edit nahi hoti. Uske liye extension workflow hai:</p>
+<ol><li>Assignee task ke andar <strong>Request extension</strong> dabata hai.</li><li>Naya date (purane se baad ka) aur reason likhta hai.</li><li>Manager ke paas request aati hai.</li><li>Manager approve kare → request <strong>Senior Manager</strong> ke paas jati hai.</li><li>Senior approve kare → task ki due date update ho jati hai.</li><li>Koi bhi level reject kare → request <strong>Rejected</strong>, due date waisi hi rehti hai.</li></ol>
+<blockquote>Ek task par ek waqt mein sirf ek extension request pending ho sakti hai.</blockquote>
+<h3 id="sec-5-8-ratings-task-complete-hone-ke-baad">5.8 Ratings (task complete hone ke baad)</h3>
+<p>Task <strong>Completed</strong> hone ke baad manager aur senior manager rating de sakte hain:</p>
+<ul><li>score <strong>1 se 5</strong></li><li>remarks likhna zaroori (kam se kam 3 character)</li><li>manager aur senior ki rating <strong>alag-alag</strong> save hoti hai</li><li>apni hi task ko rate nahi kar sakte</li><li>pehle di gayi rating ko update bhi kiya ja sakta hai</li></ul>
+<h3 id="sec-5-9-task-cancel-karna">5.9 Task cancel karna</h3>
+<ul><li>Kaun kar sakta hai: task banane wala ya assigned manager</li><li>Reason likhna zaroori hai</li><li>Completed ya already cancelled task cancel nahi ho sakta</li></ul>
+<h3 id="sec-5-10-group-tasks-do-modes">5.10 Group tasks (do modes)</h3>
+<p>Group task tab use karein jab kaam kai logon ko milkar karna ho.</p>
+<table><thead><tr><th></th><th><strong>Mode A — Full contribution</strong></th><th><strong>Mode B — Leader consolidated</strong></th></tr></thead><tbody><tr><td>Har member ka alag contribution task</td><td>Haan</td><td>Haan</td></tr><tr><td>Sab contributions complete hona zaroori</td><td><strong>Haan</strong></td><td>Nahi</td></tr><tr><td>Leader kab submit kar sakta hai</td><td>Jab sab contributions complete hon</td><td>Kabhi bhi</td></tr><tr><td>Kab use karein</td><td>Jab har member ka kaam zaroori ho</td><td>Jab sirf final delivery matter kare</td></tr></tbody></table>
+<p>Group banane ke rules:</p>
+<ul><li>kam se kam <strong>2 members</strong></li><li>group leader wahi hota hai jo task ka assignee hai</li><li>members leader ki team aur department ke andar hone chahiye</li><li>har member ka apna audit trail hota hai</li></ul>
+<hr />
+<h2 id="sec-6-har-role-ke-liye-10-minute-tour">6. Har role ke liye 10-minute tour</h2>
+<h3 id="sec-6-1-employee-pehla-din">6.1 Employee — pehla din</h3>
+<ol><li>Login karke <strong>Dashboard</strong> dekhein — &quot;My open tasks&quot;, &quot;Overdue&quot;, &quot;Your action queue&quot;.</li><li><strong>Tasks → New task</strong> se apne liye task banayein. Status <strong>Awaiting activation</strong> hoga.</li><li>Manager ke approve karne ka intezaar karein. Notification bell par update aayega.</li><li>Approve hone ke baad task kholein aur <strong>Start work</strong> dabayein.</li><li>Kaam khatam hone par <strong>Submit for completion</strong> dabayein.</li><li>Rework aaye to comments padhein, sudhar karein, dobara submit karein.</li><li>Task complete hone ke baad manager aur senior ki ratings task detail mein dikhengi.</li></ol>
+<h3 id="sec-6-2-manager-pehla-din">6.2 Manager — pehla din</h3>
+<ol><li><strong>Action Center</strong> kholein — yahan aapke saare pending kaam milenge:<ul><li>Activation approvals (naye self-created tasks)</li><li>Manager reviews (submit hue tasks)</li><li>Extensions (due date requests)</li><li>Ratings (completed tasks jinke liye rating baaki hai)</li></ul></li><li>Employee ka task approve ya reject karein. Reject karte waqt clear reason likhein.</li><li>Completion review mein <strong>Approve &amp; send to senior</strong> ya <strong>Return for rework</strong> chunein.</li><li><strong>Tasks → New task</strong> se apne aap ko ya apni team ko task assign karein — ye seedha <strong>Active</strong> hoga.</li><li><strong>Team</strong> page par apne direct reports ka workload dekhein.</li><li><strong>Reports</strong> mein &quot;Tasks assigned by manager&quot; aur &quot;Tasks created by employee&quot; alag-alag dekhein.</li><li>Completed tasks par apni <strong>1–5 rating</strong> dein.</li></ol>
+<blockquote>Manager sirf apne direct reports ko assign kar sakta hai. Dusri team ke log assign list mein nahi aayenge.</blockquote>
+<h3 id="sec-6-3-senior-manager-pehla-din">6.3 Senior Manager — pehla din</h3>
+<ol><li>Login karke <strong>Action Center</strong> kholein — final approvals aur extension decisions yahan honge.</li><li><strong>Senior review</strong> wale task ko <strong>Final approval</strong> ya <strong>Return to manager</strong> karein.</li><li>Return karte waqt reason likhein — wo manager ko dikhega.</li><li><strong>Team</strong> aur <strong>Reports</strong> mein poore department ka data dekhein.</li><li><strong>AI Insights</strong> mein department ka workload aur due-date risk dekhein.</li><li>Completed tasks par apni alag rating dein.</li><li><strong>Meetings</strong> mein department ki meetings aur transcripts dekh sakte hain.</li></ol>
+<h3 id="sec-6-4-administrator-pehla-din">6.4 Administrator — pehla din</h3>
+<ol><li><strong>Administration → Overview</strong> mein users, departments aur AI status dekhein.</li><li><strong>Users</strong> tab se naya user banayein, role badlein, ya password reset karein.</li><li><strong>Departments</strong> tab se department aur uska senior manager set karein.</li><li><strong>AI settings</strong> mein OpenAI-compatible API key aur model set karein (optional).</li><li>Task detail khol kar dekh sakte hain, lekin koi workflow action nahi kar sakte.</li></ol>
+<blockquote>Admin ko saare tasks dikhte hain — oversight ke liye — lekin create, approve, rate ya cancel nahi kar sakta.</blockquote>
+<hr />
+<h2 id="sec-7-meetings-ai">7. Meetings + AI</h2>
+<p>Meeting notes manually likhna bhool jaiye — transcript paste karein aur AI se extract karwayein.</p>
+<ol><li><strong>Meetings → New meeting</strong> kholein.</li><li>Title, date aur participants chunein.</li><li>Transcript paste karein (optional — baad mein bhi add ho sakta hai).</li><li><strong>Create meeting</strong> dabayein.</li><li>Meeting detail mein <strong>Run AI extraction</strong> dabayein.</li><li>AI ye cheezein banata hai:<ul><li>summary</li><li>decisions</li><li>action items</li></ul></li><li>Kisi bhi action item ke saath <strong>Create task</strong> dabayein — wo seedha governed task ban jata hai.</li></ol>
+<p><strong>Privacy rules:</strong></p>
+<ul><li>Raw transcript sirf Admin, creator, department senior manager, aur creator/participants ke manager dekh sakte hain.</li><li>Employee participants ko sirf summary, decisions aur action items dikhte hain — poora transcript nahi.</li><li>Agar AI key set nahi hai, to built-in analysis chalta hai. Result simple hota hai, lekin feature kaam karta hai.</li></ul>
+<hr />
+<h2 id="sec-8-reports">8. Reports</h2>
+<p>Reports do tarah ke kaam ko <strong>alag-alag</strong> dikhati hain, phir combined total:</p>
+<table><thead><tr><th>Report</th><th>Matlab</th></tr></thead><tbody><tr><td><strong>Tasks assigned by manager</strong></td><td>Jo kaam manager ne assign kiya (creator ≠ assignee)</td></tr><tr><td><strong>Tasks created by employee</strong></td><td>Jo kaam employee ne khud banaya</td></tr><tr><td><strong>Combined total</strong></td><td>Dono ka jod — reference ke liye</td></tr></tbody></table>
+<p>Har report mein ye metrics milte hain:</p>
+<ul><li>total, completed, open, overdue</li><li>on-time completion rate</li><li>average cycle days</li><li>average effort hours</li><li>manager rating aur senior rating ka average</li><li>per-person breakdown</li></ul>
+<p><strong>Export CSV</strong> button se poora report Excel mein khole ja sakne wale format mein download hota hai.</p>
+<hr />
+<h2 id="sec-9-ai-insights">9. AI Insights</h2>
+<p><strong>AI Insights</strong> page batata hai:</p>
+<ul><li>kis person par kitna workload hai</li><li>kis task ki due date sabse zyada risk mein hai</li><li>kaunse tasks late hone ke chance zyada hain</li><li>suggested interventions</li></ul>
+<p>Ye analysis sirf aapke <strong>authorised scope</strong> ke data se banti hai. Employee ko dusri team ka data nahi dikhega, manager ko sirf apni team ka, senior ko apne department ka.</p>
+<p>Agar AI key configured hai to &quot;Live AI&quot; label dikhta hai. Warna &quot;Built-in analysis&quot; ya &quot;Built-in fallback&quot; — dono mein result aata hai.</p>
+<hr />
+<h2 id="sec-10-notifications">10. Notifications</h2>
+<p>Bell icon par ye alerts aate hain:</p>
+<ul><li>naya task assign hua</li><li>activation approval chahiye</li><li>completion review chahiye</li><li>extension request aayi ya decide hui</li><li>rating mili</li><li>group task update</li></ul>
+<p>Bell kholein → notification par click karein → seedha us task par pahunch jayenge. <strong>Mark all read</strong> se sab clear ho jate hain.</p>
+<hr />
+<h2 id="sec-11-privacy-kaun-kya-dekh-sakta-hai">11. Privacy: kaun kya dekh sakta hai</h2>
+<table><thead><tr><th>Cheez</th><th>Employee</th><th>Manager</th><th>Senior Manager</th><th>Admin</th></tr></thead><tbody><tr><td>Apne tasks</td><td>Haan</td><td>Haan</td><td>Haan</td><td>Read-only</td></tr><tr><td>Dusron ko assign karna</td><td>Nahi</td><td>Direct reports</td><td>Department</td><td>Nahi</td></tr><tr><td>Activation approve</td><td>Nahi</td><td>Haan</td><td>Apni line ke liye</td><td>Nahi</td></tr><tr><td>Completion review</td><td>Nahi</td><td>Level 1</td><td>Level 2</td><td>Nahi</td></tr><tr><td>Team oversight</td><td>Nahi</td><td>Direct reports</td><td>Department</td><td>Sab</td></tr><tr><td>Reports</td><td>Apne</td><td>Apne + reports</td><td>Department</td><td>Organisation</td></tr><tr><td>Meetings</td><td>Apni/participant</td><td>Apne + reports ki</td><td>Department</td><td>Sab</td></tr><tr><td>Raw transcript</td><td>Sirf apni banayi</td><td>Creator/participant ke manager</td><td>Department</td><td>Sab</td></tr><tr><td>Users/departments/AI manage</td><td>Nahi</td><td>Nahi</td><td>Nahi</td><td>Haan</td></tr></tbody></table>
+<blockquote>Ye rules sirf UI mein nahi — <strong>server par enforce</strong> hote hain. URL se bhi doosre team ka data nahi khul sakta.</blockquote>
+<hr />
+<h2 id="sec-12-common-first-time-problems-faq">12. Common first-time problems (FAQ)</h2>
+<p><strong>Q: Mujhe task dikh nahi raha.</strong> Aapka task aapke scope se bahar hai. Employee ko sirf apne, apne banaye, ya group ke tasks dikhte hain. Manager ko direct reports ke, senior ko department ke.</p>
+<p><strong>Q: Approve button nahi dikh raha.</strong> Aap us task ke assigned manager ya senior manager nahi hain, ya task us status mein nahi hai jahan approval allowed hai.</p>
+<p><strong>Q: Employee ne task banaya, lekin Start work button nahi hai.</strong> Task <strong>Awaiting activation</strong> hai. Pehle manager ko approve karna hoga.</p>
+<p><strong>Q: Senior ne reject kiya, par employee ke paas wapas kyun nahi aaya?</strong> Ye design hai. Senior rejection pehle manager ke paas jata hai. Manager decide karega ki corrections maange ya dobara senior ko bheje.</p>
+<p><strong>Q: Due date edit kyun nahi ho rahi?</strong> Due date seedha change nahi hoti. <strong>Request extension</strong> use karein — manager aur senior dono approve karenge tab date badlegi.</p>
+<p><strong>Q: Rating option kyun nahi hai?</strong> Rating sirf <strong>Completed</strong> task par milti hai, aur sirf us task ke manager/senior ko. Apni task rate nahi kar sakte.</p>
+<p><strong>Q: Admin task create kyun nahi kar sakta?</strong> Admin platform manage karta hai, workflow mein hissa nahi leta. Ye security boundary hai.</p>
+<p><strong>Q: AI kaam nahi kar raha.</strong> Admin → AI settings mein key check karein. Key na ho to built-in analysis chalta hai — feature band nahi hota.</p>
+<p><strong>Q: Login nahi ho raha.</strong> Email-password check karein. Password <code>demo1234</code> hai. Bahut zyada galat attempts par thodi der ke liye login block ho sakta hai.</p>
+<p><strong>Q: Data reset ho gaya.</strong> Free hosting plan par disk temporary hota hai. Service restart hone par demo data wapas aa jata hai. Permanent data ke liye Railway + volume wala setup chahiye.</p>
+<p><strong>Q: Group task submit nahi ho raha.</strong> Mode A mein saare member contribution tasks pehle complete hone chahiye. Task detail mein readiness reason dikhega.</p>
+<p><strong>Q: Meeting transcript nahi dikh raha.</strong> Raw transcript restricted hai. Employee participant ko sirf summary, decisions aur action items milte hain.</p>
+<hr />
+<h2 id="sec-13-status-glossary-quick-reference">13. Status glossary (quick reference)</h2>
+<table><thead><tr><th>Status</th><th>Kis ke paas action hai</th></tr></thead><tbody><tr><td>Awaiting activation</td><td>Manager</td></tr><tr><td>Activation rejected</td><td>Task creator (edit + resubmit)</td></tr><tr><td>Active</td><td>Assignee (start)</td></tr><tr><td>In progress</td><td>Assignee (submit)</td></tr><tr><td>Manager review</td><td>Manager</td></tr><tr><td>Senior review</td><td>Senior Manager</td></tr><tr><td>Returned to manager</td><td>Manager</td></tr><tr><td>Needs rework</td><td>Assignee</td></tr><tr><td>Completed</td><td>Manager aur Senior (rating)</td></tr><tr><td>Cancelled</td><td>Koi nahi — task band</td></tr></tbody></table>
+<hr />
+<h2 id="sec-14-demo-accounts">14. Demo accounts</h2>
+<p>Password sabka: <strong><code>demo1234</code></strong></p>
+<table><thead><tr><th>Role</th><th>Naam</th><th>Email</th></tr></thead><tbody><tr><td>Employee</td><td>Elena Rossi</td><td><code>elena.rossi@meridian.io</code></td></tr><tr><td>Manager</td><td>James Rivera</td><td><code>james.rivera@meridian.io</code></td></tr><tr><td>Senior Manager</td><td>Sarah Chen</td><td><code>sarah.chen@meridian.io</code></td></tr><tr><td>Administrator</td><td>Maya Patel</td><td><code>maya.patel@meridian.io</code></td></tr></tbody></table>
+<p>Demo team chain:</p>
+<pre class="code"><code>Elena Rossi (Employee)
+      |
+      v
+James Rivera (Manager)
+      |
+      v
+Sarah Chen (Senior Manager)</code></pre>
+<p>Isliye Elena ka task pehle James ke paas jayega, phir Sarah ke paas.</p>
+<hr />
+<h2 id="sec-15-manager-ke-liye-3-minute-demo-script">15. Manager ke liye 3-minute demo script</h2>
+<p>Agar aap kisi ko jaldi mein project dikhana chahte hain, to yahi sequence follow karein:</p>
+<ol><li><strong>Employee</strong> se login karein → naya task banayein → status &quot;Awaiting activation&quot; dikhayein.</li><li><strong>Manager</strong> se login karein → Action Center → task approve karein.</li><li>Wapas <strong>Employee</strong> → task start karein → complete karke submit karein.</li><li><strong>Manager</strong> → review approve karein.</li><li><strong>Senior Manager</strong> → final approve karein → status &quot;Completed&quot;.</li><li><strong>Ratings</strong> dikhayein — manager aur senior ki alag-alag.</li><li><strong>Reports</strong> → assigned vs self-created split dikhayein.</li><li><strong>Meetings</strong> → transcript process karke action item se task banayein.</li><li><strong>AI Insights</strong> → workload risk dikhayein.</li></ol>
+<p>Bas — poora product 3 minute mein cover ho jata hai.</p>
+<hr />
+<h2 id="sec-16-ek-line-mein-yaad-rakhein">16. Ek line mein yaad rakhein</h2>
+<blockquote><strong>Task banayein → approve karwayein → kaam karein → submit karein → Manager → Senior → Completed → Rating.</strong></blockquote>
+<p>Aur haan: due date sirf extension se badalti hai, aur senior ka reject seedha employee ke paas nahi jata.</p>
+    </main>
+
+    <footer class="doc-foot">
+      <span>Meridian · First-Time User Guide</span>
+      <span>Updated 2026-11-03</span>
+    </footer>
+  </div>
+</body>
+</html>

@@ -12,6 +12,20 @@ The repository is a monorepo with a Node/Express/SQLite API and a React/Vite sin
 └─ package.json     Workspace scripts
 ```
 
+## Documentation
+
+- **`USER_GUIDE.md`** — first-time user guide: task lifecycle, approvals, roles and a 3-minute demo script.
+- **`docs/meridian-user-guide.pdf`** — ready-to-share PDF version of the guide.
+- **`docs/user-guide.html`** — styled, printable source page for the PDF.
+- **`DESIGN.md`** — product and design decisions.
+- **`DEPLOY.md`** — hosting options (Render, Railway, Vercel).
+
+Regenerate the printable guide after editing `USER_GUIDE.md`:
+
+```bash
+npm run docs
+```
+
 ## Quick start
 
 ```bash
