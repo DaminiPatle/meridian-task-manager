@@ -4,6 +4,8 @@ Meridian is an AI-assisted task manager built around a simple rule: **work moves
 
 The repository is a monorepo with a Node/Express/SQLite API and a React/Vite single-page app.
 
+**Live demo:** <https://meridian-wfjd.onrender.com> — hosted on Render's free plan. It can take up to a minute to wake after a period of inactivity, and the demo data reseeds whenever the service restarts.
+
 ```
 .
 ├─ server/          Express 5 + node:sqlite API (no native dependencies)
