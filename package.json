@@ -1,0 +1,23 @@
+{
+  "name": "meridian-task-manager",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Meridian — AI-powered task manager with multi-tier approvals and strict role scoping",
+  "workspaces": [
+    "server",
+    "web"
+  ],
+  "scripts": {
+    "dev": "node scripts/dev.js",
+    "dev:server": "npm --workspace server run dev",
+    "dev:web": "npm --workspace web run dev",
+    "build": "npm --workspace web run build",
+    "start": "npm --workspace server run start",
+    "test": "npm --workspace server test",
+    "seed": "node server/src/seed-cli.js"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  }
+}
