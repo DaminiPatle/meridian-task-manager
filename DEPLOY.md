@@ -1,52 +1,86 @@
 # Deploying Meridian
 
-Meridian has two parts:
+The fastest way to give someone a link: deploy **one service** that serves both the
+React UI and the Express API from the same URL. The customer just opens the link — no
+GitHub, Node, install or setup on their side.
 
-| Part | Folder | Host |
+| Part | Folder | How it runs |
 |---|---|---|
-| React UI | `web/` | Vercel |
-| Express + SQLite API | `server/` | Railway (Docker + volume) |
+| React UI | `web/` | Built with Vite, served as static files |
+| Express + SQLite API | `server/` | Node process, same port as the UI |
 
-## Why not everything on Vercel?
+The root `Dockerfile` does the whole thing:
 
-Vercel Functions run on an ephemeral filesystem. SQLite needs a persistent file, so a
-SQLite database cannot live on Vercel. Vercel's own guide says the same:
-<https://vercel.com/kb/guide/is-sqlite-supported-in-vercel>
+1. builds `web/` into `web/dist`
+2. installs only the server dependencies
+3. starts `node server/src/index.js`, which serves `web/dist` and `/api/*` on `$PORT`
 
-The UI itself deploys to Vercel perfectly. The API and database stay on a host that
-supports a persistent volume.
+`server/src/index.js` creates the SQLite schema and seeds the demo workspace when the
+database is empty, so there is no separate seed step.
 
 ---
 
-## 1. Deploy the API on Railway
+## Option A — Render (free, one click, fastest)
 
-1. Push this repository to GitHub (already configured).
-2. Go to <https://railway.app/new> → **Deploy from GitHub repo** → select the repo.
-3. Railway detects the root `Dockerfile` automatically.
-4. Open the service → **Variables** and add:
+Render's free plan has an **ephemeral disk**. That is fine for a demo: the app starts,
+seeds itself, and works. Data resets when the service restarts (after ~15 min idle the
+free service sleeps, and it wakes on the next visit).
+
+1. Push this repository to GitHub.
+2. Open this blue-print link and sign in with GitHub:
+
+   <https://render.com/deploy?repo=https://github.com/DaminiPatle/meridian-task-manager>
+
+   Render reads `render.yaml` and shows a service named **meridian**.
+3. Click **Apply**. Wait for the first build (~3–5 minutes).
+4. Render gives you a public URL like `https://meridian-xxxx.onrender.com`.
+5. Open `https://meridian-xxxx.onrender.com/api/health` → should return
+   `{"ok":true,"service":"meridian",...}`.
+6. Open the root URL and log in with the demo accounts below.
+
+That URL is the link to share.
+
+> Free services sleep after inactivity; the first visit after a sleep takes ~30 seconds
+> to wake up. After that it is fast.
+
+### Free plan directory
+
+`render.yaml` sets `DB_PATH=/tmp/meridian.db`, which is writable on Render's free plan.
+If you later upgrade to a paid plan with a disk, change it to a path inside the mounted
+disk (for example `/data/meridian.db`).
+
+## Option B — Railway (persistent data)
+
+Railway gives you a volume, so users, tasks and approvals survive restarts and
+redeploys. Use this when you want the manager to keep any changes they make.
+
+1. Go to <https://railway.app/new> → **Deploy from GitHub repo** → select this repo.
+2. Railway picks up the root `Dockerfile` (and `railway.json`).
+3. Service → **Variables**:
 
    | Variable | Value |
    |---|---|
-   | `AUTH_SECRET` | a long random string (e.g. `openssl rand -hex 32`) |
+   | `AUTH_SECRET` | a long random string |
    | `DB_PATH` | `/data/meridian.db` |
-   | `CORS_ORIGIN` | `https://your-app.vercel.app` (add later, after step 2) |
 
-5. Open **Settings → Volumes** → add a volume mounted at **`/data`**.
-   This keeps the SQLite file across restarts and redeploys.
-6. Open **Settings → Networking** → **Generate Domain**.
-7. Verify: `https://your-api.up.railway.app/api/health` should return
-   `{"ok":true,"service":"meridian",...}`.
+   Generate a secret in PowerShell:
 
-The server creates the schema and seeds the demo workspace automatically when the
-database is empty, so no separate seed command is needed.
+   ```powershell
+   [Convert]::ToHexString([System.Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
+   ```
 
-> Without the `/data` volume the demo still runs, but its data resets whenever Railway
-> restarts the service.
+4. **Settings → Volumes** → add a volume mounted at **`/data`**.
+5. **Settings → Networking → Generate Domain**.
+6. Verify `https://your-service.up.railway.app/api/health`.
 
-## 2. Deploy the UI on Vercel
+## Option C — Vercel UI + Railway API (only if Vercel is required)
 
-1. Go to <https://vercel.com/new> → import the same GitHub repository.
-2. Configure the project:
+Vercel Functions have an ephemeral filesystem, so SQLite cannot live there
+(<https://vercel.com/kb/guide/is-sqlite-supported-in-vercel>). The UI can still be on
+Vercel while the API stays on Railway.
+
+1. Deploy the API on Railway exactly as in Option B.
+2. On <https://vercel.com/new> import this repo and set:
 
    | Setting | Value |
    |---|---|
@@ -56,23 +90,15 @@ database is empty, so no separate seed command is needed.
    | **Output Directory** | `dist` |
    | **Install Command** | `npm install` |
 
-3. Add an environment variable:
+3. Add `VITE_API_URL=https://your-service.up.railway.app/api` (build-time variable).
+4. Deploy, then set Railway's `CORS_ORIGIN` to the Vercel domain and redeploy the API.
 
-   | Name | Value |
-   |---|---|
-   | `VITE_API_URL` | `https://your-api.up.railway.app/api` |
+> The single-service options above are simpler; only use this split if you specifically
+> need the frontend on Vercel.
 
-4. Click **Deploy**. Vercel gives you `https://your-app.vercel.app`.
+## Demo accounts
 
-5. Go back to Railway → **Variables** → set
-   `CORS_ORIGIN=https://your-app.vercel.app` and redeploy the service.
-
-Vite reads `VITE_API_URL` at build time, so changing it later requires a redeploy on
-Vercel (Deployments → Redeploy).
-
-## 3. Demo accounts
-
-The database seeds with fictional data on first boot. Password: `demo1234`.
+Password for every seeded account: `demo1234`.
 
 | Role | Email |
 |---|---|
@@ -81,18 +107,23 @@ The database seeds with fictional data on first boot. Password: `demo1234`.
 | Senior Manager | `sarah.chen@meridian.io` |
 | Administrator | `maya.patel@meridian.io` |
 
+Share the URL plus these credentials with the manager. The login page does not list
+accounts or hint the password.
+
 ## Local production check
 
 ```powershell
 npm run build
+$env:DB_PATH = "$env:TEMP\meridian-check.db"
+$env:PORT = 4000
 npm start
 # open http://localhost:4000
 ```
 
-`server/src/app.js` serves `web/dist` when it exists, so a single Express process can
-host the whole app outside Vercel.
+`server/src/app.js` serves `web/dist` when it exists, so one Express process hosts the
+whole app locally too.
 
-## Alternative: full Vercel
+## Alternative: fully on Vercel
 
 Running everything on Vercel requires replacing SQLite with a hosted database
 (Vercel Postgres/Neon or Turso). The current data layer is synchronous, so every query

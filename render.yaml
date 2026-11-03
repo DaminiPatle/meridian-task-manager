@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: meridian
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Render's free plan has an ephemeral disk; the database is reseeded
+      # with demo data whenever the service restarts.
+      - key: DB_PATH
+        value: /tmp/meridian.db
+      - key: AUTH_SECRET
+        generateValue: true
