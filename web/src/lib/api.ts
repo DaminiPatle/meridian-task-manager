@@ -20,7 +20,10 @@ import type {
 } from './types';
 
 const TOKEN_KEY = 'meridian.token';
-const API_BASE = '/api';
+// In local dev this stays "/api" and Vite proxies it to localhost:4000.
+// In production (Vercel) set VITE_API_URL to the deployed API, e.g.
+// https://meridian-api.up.railway.app/api
+const API_BASE = (import.meta.env.VITE_API_URL || '/api').replace(/\/+$/, '');
 
 export class ApiError extends Error {
   status: number;
